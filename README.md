@@ -1,10 +1,6 @@
 # NestJS REST API
 
-A CRUD REST API using the NestJS framework and MongoDB/Mongoose.
-
-## Setup
-
-Add your mongodb uri to the "config/keys.ts file"
+A CRUD REST API using the NestJS + MongoDB/Mongoose.
 
 ## Installation
 
