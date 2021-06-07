@@ -2,12 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\config",
-    "\\src\\items",
-    "\\src\\items\\dto",
-    "\\src\\items\\interfaces",
-    "\\src\\items\\schemas"
+    "\\src\\config"
   ],
-  "SelectedNode": "\\src\\app.controller.ts",
+  "SelectedNode": "\\src\\app.module.ts",
   "PreviewInSolutionExplorer": false
 }
