@@ -9,6 +9,12 @@ import {
     HttpException,
     HttpStatus
 } from '@nestjs/common';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
 import { Message } from './interfaces/message.interface';
@@ -46,6 +52,7 @@ export class MessagesController {
     }
 
     @Post()
+    @ApiOperation({ summary: 'Create message' })
     createById(@Body() createMessageDto: CreateMessageDto): Promise<ServiceResult<Message>> {
 
         if (this.isEmpty(createMessageDto)) {
