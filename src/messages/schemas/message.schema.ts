@@ -15,7 +15,7 @@ export const MessageSchema = new mongoose.Schema({
         maxlength: 50
     },
     prefCommunication: {
-        type: [String],
+        type: String,
         required: true,
         enum: [PrefferedCommunicationWay.Email, PrefferedCommunicationWay.Phone]
     },
