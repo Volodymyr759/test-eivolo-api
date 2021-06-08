@@ -16,7 +16,7 @@ export class MessagesService {
     async findAll(): Promise<ServiceResult<Message>> {
         await this.messageModel.find()
             .then(
-                result => { this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageSchemaToDto(result)) }
+                result => { this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(result)) }
             )
             .catch(
                 () => {
@@ -31,7 +31,7 @@ export class MessagesService {
     async findById(id: string): Promise<ServiceResult<Message>> {
         await this.messageModel.find({ _id: id })
             .then(
-                result => { this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageSchemaToDto(result)); }
+                result => { this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(result)); }
             )
             .catch(
                 () => {
@@ -49,7 +49,7 @@ export class MessagesService {
             .then(
                 result => {
                     let data = [{ result }]
-                    this.setResult(HttpStatus.CREATED, 'Created', true, this.mapMessageSchemaToDto(data));
+                    this.setResult(HttpStatus.CREATED, 'Created', true, this.mapMessageDocumentToDto(data));
                 }
             )
             .catch(
@@ -75,7 +75,7 @@ export class MessagesService {
             .then(
                 result => {
                     let data = [{ result }]
-                    this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageSchemaToDto(data));
+                    this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(data));
                 }
             );
 
@@ -95,7 +95,7 @@ export class MessagesService {
             .then(
                 result => {
                     let data = [{ result }]
-                    this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageSchemaToDto(data));
+                    this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(data));
                 }
             )
             .catch(
@@ -116,7 +116,7 @@ export class MessagesService {
         this.serviceResult.data = data;
     }
 
-    private mapMessageSchemaToDto(messages: any[]) {
+    private mapMessageDocumentToDto(messages: any[]) {
         const output = messages.map(
             function (message) {
                 return {
