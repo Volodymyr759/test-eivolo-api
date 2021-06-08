@@ -2,8 +2,12 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\config"
+    "\\src\\infrastructure",
+    "\\src\\messages",
+    "\\src\\messages\\dto",
+    "\\src\\messages\\interfaces",
+    "\\src\\messages\\schemas"
   ],
-  "SelectedNode": "\\src\\app.module.ts",
+  "SelectedNode": "\\src\\messages\\messages.service.ts",
   "PreviewInSolutionExplorer": false
 }
