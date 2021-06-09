@@ -1,4 +1,4 @@
-import { PrefferedCommunicationWay } from '../prefCommunicationWayEnum'
+import PrefferedCommunicationWay from '../prefCommunicationWayEnum'
 
 export class CreateMessageDto {
     readonly fullName: string;
