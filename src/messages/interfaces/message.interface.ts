@@ -1,4 +1,4 @@
-import PrefferedCommunicationWay from '../prefCommunicationWayEnum'
+import { PrefferedCommunicationWay } from '../../infrastructure/enums/prefCommunicationWayEnum'
 
 export interface Message {
     id?: string;
