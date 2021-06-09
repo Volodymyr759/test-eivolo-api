@@ -27,6 +27,7 @@ export class MessagesController {
     constructor(private readonly messagesService: MessagesService) { }
 
     @Get()
+    @ApiOperation({ summary: 'Get all messages' })
     findAll(): Promise<ServiceResult<Message>> {
         const messages = this.messagesService.findAll()
             .catch(
@@ -37,6 +38,7 @@ export class MessagesController {
     }
 
     @Get(':id')
+    @ApiOperation({ summary: 'Get message by id' })
     findById(@Param('id') id: string): Promise<ServiceResult<Message>> {
 
         if (String(id).trim().length === 0) {
@@ -68,6 +70,7 @@ export class MessagesController {
     }
 
     @Delete(':id')
+    @ApiOperation({ summary: 'Delete message by id' })
     deleteById(@Param('id') id: string): Promise<ServiceResult<Message>> {
 
         if (String(id).trim().length === 0) {
@@ -83,6 +86,7 @@ export class MessagesController {
     }
 
     @Put(':id')
+    @ApiOperation({ summary: 'Replace old message by new instance, using id' })
     updateById(@Param('id') id: string, @Body() updateMessageDto: CreateMessageDto): Promise<ServiceResult<Message>> {
 
         if (String(id).trim().length === 0) {
