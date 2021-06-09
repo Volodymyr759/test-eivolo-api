@@ -2,6 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\node_modules\\@nestjs",
+    "\\node_modules\\@nestjs\\swagger",
+    "\\node_modules\\swagger-ui-express",
     "\\src",
     "\\src\\infrastructure",
     "\\src\\infrastructure\\enums",
@@ -10,6 +12,6 @@
     "\\src\\messages\\interfaces",
     "\\src\\messages\\schemas"
   ],
-  "SelectedNode": "\\src\\messages\\messages.controller.ts",
+  "SelectedNode": "\\src\\app.service.ts",
   "PreviewInSolutionExplorer": false
 }
