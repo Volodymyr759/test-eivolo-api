@@ -18,7 +18,7 @@ import {
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
 import { Message } from './interfaces/message.interface';
-import { ServiceResult } from '../infrastructure/ServiceResult';
+import { ServiceResult } from './ServiceResult';
 
 @Controller('messages')
 export class MessagesController {
