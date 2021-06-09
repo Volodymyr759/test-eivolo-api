@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import PrefferedCommunicationWay from '../prefCommunicationWayEnum'
+import { PrefferedCommunicationWay } from '../prefCommunicationWayEnum'
 
 export const MessageSchema = new mongoose.Schema({
     fullName: {
