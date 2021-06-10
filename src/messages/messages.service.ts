@@ -3,7 +3,7 @@ import { Message } from './interfaces/message.interface';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { HttpException, HttpStatus } from '@nestjs/common'
-import { ServiceResult } from './serviceResult';
+import { ServiceResult } from '../infrastructure/serviceResult';
 
 @Injectable()
 export class MessagesService {
