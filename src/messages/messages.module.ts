@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
 import { MessageSchema } from './schemas/message.schema';
-import { ServiceResult } from '../infrastructure/serviceResult';
+import { ServiceResult } from './serviceResult';
 
 @Module({
     imports: [MongooseModule.forFeature([{ name: 'Message', schema: MessageSchema }])],
