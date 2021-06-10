@@ -7,11 +7,11 @@ import { ServiceResult } from './ServiceResult';
 
 @Injectable()
 export class MessagesService {
-    // Private members
-    private serviceResult = new ServiceResult<Message>(null, '', false, null);
-
     // Ctor
-    constructor(@InjectModel('Message') private readonly messageModel: Model<Message>) { }
+    constructor(
+        @InjectModel('Message') private readonly messageModel: Model<Message>,
+        private serviceResult: ServiceResult<Message>
+    ) { }
 
     async findAll(): Promise<ServiceResult<Message>> {
         await this.messageModel.find()
@@ -117,7 +117,7 @@ export class MessagesService {
     }
 
     private mapMessageDocumentToDto(messages: any[]) {
-        const output = messages.map(
+        const messagesDto = messages.map(
             function (message) {
                 return {
                     "id": message._id,
@@ -130,6 +130,6 @@ export class MessagesService {
                 };
             }
         );
-        return output;
+        return messagesDto;
     }
 }

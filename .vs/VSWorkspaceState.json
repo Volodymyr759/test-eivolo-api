@@ -1,15 +1,12 @@
 {
   "ExpandedNodes": [
     "",
-    "\\node_modules\\@nestjs",
     "\\src",
-    "\\src\\infrastructure",
-    "\\src\\infrastructure\\enums",
     "\\src\\messages",
     "\\src\\messages\\dto",
     "\\src\\messages\\interfaces",
     "\\src\\messages\\schemas"
   ],
-  "SelectedNode": "\\src\\messages\\messages.controller.ts",
+  "SelectedNode": "\\package.json",
   "PreviewInSolutionExplorer": false
 }
