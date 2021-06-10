@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Type } from '@nestjs/common';
 
 @Injectable()
-export class ServiceResult<T> {
+export class ServiceResult<T extends Type<unknown>> {
     // Members
     httpStatus?: number;
     message: string;
