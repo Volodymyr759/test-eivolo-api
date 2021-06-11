@@ -20,7 +20,7 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
 
     // CORS settings
-    const allowedOrigins = ['http://localhost:3000'];
+    const allowedOrigins = ['http://localhost:3000', 'https://blooming-taiga-34018.herokuapp.com'];
     const options: cors.CorsOptions = {
         origin: allowedOrigins
     };
