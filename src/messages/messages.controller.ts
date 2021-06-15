@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
-import { Message } from './interfaces/message.interface';
+import { Message } from './entities/message.entity';
 import { ServiceResult } from '../infrastructure/serviceResult';
 
 @Controller('messages')
@@ -47,7 +47,7 @@ export class MessagesController {
         if (this.isEmpty(createMessageDto)) {
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
         }
-        return this.messagesService.create(createMessageDto);
+        return this.messagesService.create({ id: '', ...createMessageDto });
     }
 
     @Delete(':id')
@@ -65,12 +65,12 @@ export class MessagesController {
     updateById(@Param('id') id: string, @Body() updateMessageDto: CreateMessageDto): Promise<ServiceResult<Message>> {
 
         if (String(id).trim().length === 0) {
-            throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+            throw new HttpException(`Bad Request`, HttpStatus.BAD_REQUEST);
         }
         if (this.isEmpty(updateMessageDto)) {
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
         }
-        return this.messagesService.updateById(id, updateMessageDto);
+        return this.messagesService.updateById(id, { id: '', ...updateMessageDto });
     }
 
     // Helpers
