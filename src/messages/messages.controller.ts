@@ -22,51 +22,32 @@ import { ServiceResult } from '../infrastructure/serviceResult';
 
 @Controller('messages')
 export class MessagesController {
-
     // Ctor
     constructor(private readonly messagesService: MessagesService) { }
 
     @Get()
     @ApiOperation({ summary: 'Get all messages' })
     findAll(): Promise<ServiceResult<Message>> {
-        const messages = this.messagesService.findAll()
-            .catch(
-                () => { throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR); }
-            );
-
-        return messages;
+        return this.messagesService.findAll();
     }
 
     @Get(':id')
     @ApiOperation({ summary: 'Get message by id' })
     findById(@Param('id') id: string): Promise<ServiceResult<Message>> {
-
         if (String(id).trim().length === 0) {
             throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
         }
-
-        const message = this.messagesService.findById(id)
-            .catch(
-                () => { throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR); }
-            );
-
-        return message;
+        return this.messagesService.findById(id);
     }
 
     @Post()
     @ApiOperation({ summary: 'Create message' })
-    createById(@Body() createMessageDto: CreateMessageDto): Promise<ServiceResult<Message>> {
+    create(@Body() createMessageDto: CreateMessageDto): Promise<ServiceResult<Message>> {
 
         if (this.isEmpty(createMessageDto)) {
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
         }
-
-        const message = this.messagesService.createById(createMessageDto)
-            .catch(
-                () => { throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR); }
-            );
-
-        return message;
+        return this.messagesService.create(createMessageDto);
     }
 
     @Delete(':id')
@@ -76,13 +57,7 @@ export class MessagesController {
         if (String(id).trim().length === 0) {
             throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
         }
-
-        const message = this.messagesService.deleteById(id)
-            .catch(
-                () => { throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR); }
-            );
-
-        return message;
+        return this.messagesService.deleteById(id);
     }
 
     @Put(':id')
@@ -92,17 +67,10 @@ export class MessagesController {
         if (String(id).trim().length === 0) {
             throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
         }
-
         if (this.isEmpty(updateMessageDto)) {
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
         }
-
-        const message = this.messagesService.updateById(id, updateMessageDto)
-            .catch(
-                () => { throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR); }
-            );
-
-        return message;
+        return this.messagesService.updateById(id, updateMessageDto);
     }
 
     // Helpers
