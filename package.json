@@ -1,8 +1,8 @@
 {
   "name": "nest-rest-api",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Test API for eivolo website",
+  "author": "Volodymyr Matsiyevskij",
   "license": "MIT",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

@@ -14,96 +14,80 @@ export class MessagesService {
     ) { }
 
     async findAll(): Promise<ServiceResult<Message>> {
-        await this.messageModel.find()
-            .then(
-                result => { this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(result)) }
-            )
-            .catch(
-                () => {
-                    const errorMessage = new HttpException('No Content', HttpStatus.NO_CONTENT);
-                    this.setResult(HttpStatus.NO_CONTENT, errorMessage.getResponse().toString(), false, null);
-                }
-            );
+        try {
+            const messages = await this.messageModel.find();
+            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(messages))
+        }
+        catch (e) {
+            const errorMessage = new HttpException('No Content', HttpStatus.NO_CONTENT);
+            this.setResult(HttpStatus.NO_CONTENT, errorMessage.getResponse().toString(), false, null);
+        }
 
         return this.serviceResult;
     }
 
     async findById(id: string): Promise<ServiceResult<Message>> {
-        await this.messageModel.find({ _id: id })
-            .then(
-                result => { this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(result)); }
-            )
-            .catch(
-                () => {
-                    const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-                    this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
-                }
-            );
+        try {
+            const message = await this.messageModel.find({ _id: id });
+            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(message));
+        }
+        catch (e) {
+            const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
+            this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
+        }
 
         return this.serviceResult;
     }
 
-    async createById(message: Message): Promise<ServiceResult<Message>> {
+    async create(message: Message): Promise<ServiceResult<Message>> {
         const newMessage = new this.messageModel(message);
-        await newMessage.save()
-            .then(
-                result => {
-                    let data = [{ result }]
-                    this.setResult(HttpStatus.CREATED, 'Created', true, this.mapMessageDocumentToDto(data));
-                }
-            )
-            .catch(
-                result => {
-                    const errorMessage = new HttpException(`${result}`, HttpStatus.BAD_REQUEST);
-                    this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
-                }
-            );
-
+        try {
+            const messageToBeCreated = await newMessage.save();
+            this.setResult(HttpStatus.CREATED, 'Created', true, this.mapMessageDocumentToDto([messageToBeCreated]));
+        }
+        catch (e) {
+            const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
+            this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
+        }
         return this.serviceResult;
     }
 
     async deleteById(id: string): Promise<ServiceResult<Message>> {
-        await this.messageModel.find({ _id: id })
-            .catch(
-                () => {
-                    const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-                    this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
-                }
-            );
+        await this.findById(id);
+        if (!this.serviceResult.success) {
+            const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
+            this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
+            return this.serviceResult;
+        }
 
-        await this.messageModel.findByIdAndRemove(id)
-            .then(
-                result => {
-                    let data = [{ result }]
-                    this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(data));
-                }
-            );
+        try {
+            const messageDeleted = await this.messageModel.findByIdAndRemove(id);
+            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto([messageDeleted]));
+        }
+        catch (e) {
+            const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
+            this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
+        }
 
         return this.serviceResult;
     }
 
     async updateById(id: string, message: Message): Promise<ServiceResult<Message>> {
-        await this.messageModel.find({ _id: id })
-            .catch(
-                () => {
-                    const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-                    this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
-                }
-            );
+        await this.findById(id);
+        if (!this.serviceResult.success) {
+            const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
+            this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
+            return this.serviceResult;
+        }
 
-        await this.messageModel.findOneAndReplace({ _id: id }, message, { new: true })
-            .then(
-                result => {
-                    let data = [{ result }]
-                    this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(data));
-                }
-            )
-            .catch(
-                result => {
-                    const errorMessage = new HttpException(`${result}`, HttpStatus.BAD_REQUEST);
-                    this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
-                }
-            );
+        try {
+            const updatedMessage = await this.messageModel.findOneAndReplace({ _id: id }, message, { new: true });
+            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto([updatedMessage]));
+        }
+        catch (e) {
+            const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
+            this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
+        }
 
         return this.serviceResult;
     }
