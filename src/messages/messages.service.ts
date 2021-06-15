@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { Message } from './interfaces/message.interface';
-import { Model } from 'mongoose';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { HttpException, HttpStatus } from '@nestjs/common'
+import { Model } from 'mongoose';
+import { Message } from './entities/message.entity';
+import { CreateMessageDto } from './dto/create-message.dto';
 import { ServiceResult } from '../infrastructure/serviceResult';
+
 
 @Injectable()
 export class MessagesService {
@@ -81,11 +82,11 @@ export class MessagesService {
         }
 
         try {
-            const updatedMessage = await this.messageModel.findOneAndReplace({ _id: id }, message, { new: true });
-            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto([updatedMessage]));
+            const updatedMessage = await this.messageModel.findByIdAndUpdate(id, message);
+            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto([message]));
         }
         catch (e) {
-            const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
+            const errorMessage = new HttpException(`{e}`, HttpStatus.BAD_REQUEST);
             this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
         }
 
