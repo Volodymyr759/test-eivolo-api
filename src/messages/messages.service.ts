@@ -1,10 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, SerializeOptions } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Message } from './entities/message.entity';
-import { CreateMessageDto } from './dto/create-message.dto';
 import { ServiceResult } from '../infrastructure/serviceResult';
-
+import { PrefferedCommunicationWay } from './prefCommunicationWayEnum'
 
 @Injectable()
 export class MessagesService {
@@ -17,7 +16,7 @@ export class MessagesService {
     async findAll(): Promise<ServiceResult<Message>> {
         try {
             const messages = await this.messageModel.find();
-            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(messages))
+            this.setResult(HttpStatus.OK, 'Ok', true, messages)
         }
         catch (e) {
             const errorMessage = new HttpException('No Content', HttpStatus.NO_CONTENT);
@@ -29,8 +28,20 @@ export class MessagesService {
 
     async findById(id: string): Promise<ServiceResult<Message>> {
         try {
-            const message = await this.messageModel.find({ _id: id });
-            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto(message));
+            const messageFromServer = await this.messageModel.find({ _id: id });
+
+            console.log(`Mes from server: ${messageFromServer}`)// - resolves immediately
+
+            const message = new Message({
+                _id: id,
+                fullName: messageFromServer[0].fullName,
+                company: messageFromServer[0].company,
+                prefCommunication: messageFromServer[0].prefCommunication,
+                email: messageFromServer[0].email,
+                phoneNumber: messageFromServer[0].phoneNumber,
+                messageText: messageFromServer[0].messageText
+            });
+            this.setResult(HttpStatus.OK, 'Ok', true, [message]);
         }
         catch (e) {
             const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
@@ -82,7 +93,7 @@ export class MessagesService {
         }
 
         try {
-            const updatedMessage = await this.messageModel.findByIdAndUpdate(id, message);
+            await this.messageModel.findByIdAndUpdate(id, message);
             this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto([message]));
         }
         catch (e) {
@@ -94,7 +105,7 @@ export class MessagesService {
     }
 
     // Helpers
-    private setResult(httpStatus, message, success, data) {
+    private setResult(httpStatus: HttpStatus, message: string, success: boolean, data: any[]) {
         this.serviceResult.httpStatus = httpStatus;
         this.serviceResult.message = message;
         this.serviceResult.success = success;
