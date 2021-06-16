@@ -1,9 +1,9 @@
-import { Injectable, HttpException, HttpStatus, SerializeOptions } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Message } from './entities/message.entity';
 import { ServiceResult } from '../infrastructure/serviceResult';
-import { PrefferedCommunicationWay } from './prefCommunicationWayEnum'
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @Injectable()
 export class MessagesService {
@@ -15,51 +15,46 @@ export class MessagesService {
 
     async findAll(): Promise<ServiceResult<Message>> {
         try {
-            const messages = await this.messageModel.find();
-            this.setResult(HttpStatus.OK, 'Ok', true, messages)
+            const messagesFromServer = await this.messageModel.find({}).exec();
+            const messages = messagesFromServer.map((mes) => {
+                let messageAsParam = mes.toObject();
+                messageAsParam._id = mes.toObject()._id.toString();
+                return new Message(messageAsParam);
+            })
+            this.serviceResult.setAsSuccess(messages);
         }
         catch (e) {
             const errorMessage = new HttpException('No Content', HttpStatus.NO_CONTENT);
-            this.setResult(HttpStatus.NO_CONTENT, errorMessage.getResponse().toString(), false, null);
+            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
         }
-
         return this.serviceResult;
     }
 
     async findById(id: string): Promise<ServiceResult<Message>> {
         try {
-            const messageFromServer = await this.messageModel.find({ _id: id });
-
-            console.log(`Mes from server: ${messageFromServer}`)// - resolves immediately
-
-            const message = new Message({
-                _id: id,
-                fullName: messageFromServer[0].fullName,
-                company: messageFromServer[0].company,
-                prefCommunication: messageFromServer[0].prefCommunication,
-                email: messageFromServer[0].email,
-                phoneNumber: messageFromServer[0].phoneNumber,
-                messageText: messageFromServer[0].messageText
-            });
-            this.setResult(HttpStatus.OK, 'Ok', true, [message]);
+            const messageFromServer = await this.messageModel.find({ _id: id }).exec();
+            let messageAsParam = messageFromServer[0].toObject();
+            messageAsParam._id = id;
+            this.serviceResult.setAsSuccess([new Message(messageAsParam)]);
         }
         catch (e) {
             const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-            this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
+            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
         }
-
         return this.serviceResult;
     }
 
-    async create(message: Message): Promise<ServiceResult<Message>> {
-        const newMessage = new this.messageModel(message);
+    async create(message: CreateMessageDto): Promise<ServiceResult<Message>> {
+        const newMessage = new this.messageModel({ id: '', ...message });
         try {
             const messageToBeCreated = await newMessage.save();
-            this.setResult(HttpStatus.CREATED, 'Created', true, this.mapMessageDocumentToDto([messageToBeCreated]));
+            let messageAsParam = messageToBeCreated.toObject();
+            messageAsParam._id = messageToBeCreated.toObject()._id.toString();
+            this.serviceResult.setAsSuccess([new Message(messageAsParam)]);
         }
         catch (e) {
             const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
-            this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
+            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
         }
         return this.serviceResult;
     }
@@ -68,64 +63,38 @@ export class MessagesService {
         await this.findById(id);
         if (!this.serviceResult.success) {
             const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-            this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
+            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
             return this.serviceResult;
         }
-
         try {
             const messageDeleted = await this.messageModel.findByIdAndRemove(id);
-            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto([messageDeleted]));
+            let messageAsParam = messageDeleted.toObject();
+            messageAsParam._id = id;
+            this.serviceResult.setAsSuccess([new Message(messageAsParam)]);
         }
         catch (e) {
             const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
-            this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
+            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
         }
-
         return this.serviceResult;
     }
 
-    async updateById(id: string, message: Message): Promise<ServiceResult<Message>> {
+    async updateById(id: string, message: CreateMessageDto): Promise<ServiceResult<Message>> {
         await this.findById(id);
         if (!this.serviceResult.success) {
             const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-            this.setResult(HttpStatus.NOT_FOUND, errorMessage.getResponse().toString(), false, null);
+            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
             return this.serviceResult;
         }
-
+        const messageToUpdate = new this.messageModel({ id: '', ...message });
         try {
-            await this.messageModel.findByIdAndUpdate(id, message);
-            this.setResult(HttpStatus.OK, 'Ok', true, this.mapMessageDocumentToDto([message]));
+            await this.messageModel.findByIdAndUpdate(id, messageToUpdate);
+            this.serviceResult.setAsSuccess([new Message(messageToUpdate)]);
         }
         catch (e) {
             const errorMessage = new HttpException(`{e}`, HttpStatus.BAD_REQUEST);
-            this.setResult(HttpStatus.BAD_REQUEST, errorMessage.getResponse().toString(), false, null);
+            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
         }
-
         return this.serviceResult;
-    }
-
-    // Helpers
-    private setResult(httpStatus: HttpStatus, message: string, success: boolean, data: any[]) {
-        this.serviceResult.httpStatus = httpStatus;
-        this.serviceResult.message = message;
-        this.serviceResult.success = success;
-        this.serviceResult.data = data;
-    }
-
-    private mapMessageDocumentToDto(messages: any[]) {
-        const messagesDto = messages.map(
-            function (message) {
-                return {
-                    "id": message._id,
-                    "fullName": message.fullName,
-                    "company": message.company,
-                    "prefCommunication": message.prefCommunication,
-                    "email": message.email,
-                    "phoneNumber": message.phoneNumber,
-                    "messageText": message.messageText
-                };
-            }
-        );
-        return messagesDto;
     }
 }

@@ -24,6 +24,7 @@ import { ServiceResult } from '../infrastructure/serviceResult';
 
 
 @Controller('messages')
+@UseInterceptors(ClassSerializerInterceptor)
 export class MessagesController {
     // Ctor
     constructor(private readonly messagesService: MessagesService) { }
@@ -35,16 +36,12 @@ export class MessagesController {
     }
 
     @Get(':id')
-    @UseInterceptors(ClassSerializerInterceptor)
     @ApiOperation({ summary: 'Get message by id' })
-    //findById(@Param('id') id: string): Promise<ServiceResult<Message>> {
-    //    if (String(id).trim().length === 0) {
-    //        throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-    //    }
-    //    return this.messagesService.findById(id);
-    //}
-    async findById(@Param('id') id: string): Promise<ServiceResult<Message>> {
-        return await this.messagesService.findById(id);
+    findById(@Param('id') id: string): Promise<ServiceResult<Message>> {
+        if (String(id).trim().length === 0) {
+            throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+        }
+        return this.messagesService.findById(id);
     }
 
     @Post()
@@ -54,13 +51,12 @@ export class MessagesController {
         if (this.isEmpty(createMessageDto)) {
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
         }
-        return this.messagesService.create({ id: '', ...createMessageDto });
+        return this.messagesService.create(createMessageDto);
     }
 
     @Delete(':id')
     @ApiOperation({ summary: 'Delete message by id' })
     deleteById(@Param('id') id: string): Promise<ServiceResult<Message>> {
-
         if (String(id).trim().length === 0) {
             throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
         }
@@ -70,14 +66,13 @@ export class MessagesController {
     @Put(':id')
     @ApiOperation({ summary: 'Replace old message by new instance, using id' })
     updateById(@Param('id') id: string, @Body() updateMessageDto: CreateMessageDto): Promise<ServiceResult<Message>> {
-
         if (String(id).trim().length === 0) {
             throw new HttpException(`Bad Request`, HttpStatus.BAD_REQUEST);
         }
         if (this.isEmpty(updateMessageDto)) {
             throw new HttpException('No Content', HttpStatus.NO_CONTENT);
         }
-        return this.messagesService.updateById(id, { id: '', ...updateMessageDto });
+        return this.messagesService.updateById(id, updateMessageDto);
     }
 
     // Helpers
