@@ -8,4 +8,7 @@ export abstract class BaseEntity {
     get id(): string {
         return this._id;
     }
+
+    @Exclude()
+    public __v?: number;
 }

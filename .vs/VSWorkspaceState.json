@@ -8,6 +8,6 @@
     "\\src\\messages\\entities",
     "\\src\\messages\\schemas"
   ],
-  "SelectedNode": "\\src\\messages\\messages.service.ts",
+  "SelectedNode": "\\src\\infrastructure\\serviceResult.ts",
   "PreviewInSolutionExplorer": false
 }
