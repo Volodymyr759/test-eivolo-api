@@ -1,4 +1,5 @@
 import {
+    ClassSerializerInterceptor,
     Controller,
     Get,
     Post,
@@ -7,7 +8,8 @@ import {
     Body,
     Param,
     HttpException,
-    HttpStatus
+    HttpStatus,
+    UseInterceptors
 } from '@nestjs/common';
 import {
     ApiBearerAuth,
@@ -19,6 +21,7 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
 import { Message } from './entities/message.entity';
 import { ServiceResult } from '../infrastructure/serviceResult';
+
 
 @Controller('messages')
 export class MessagesController {
@@ -32,12 +35,16 @@ export class MessagesController {
     }
 
     @Get(':id')
+    @UseInterceptors(ClassSerializerInterceptor)
     @ApiOperation({ summary: 'Get message by id' })
-    findById(@Param('id') id: string): Promise<ServiceResult<Message>> {
-        if (String(id).trim().length === 0) {
-            throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-        }
-        return this.messagesService.findById(id);
+    //findById(@Param('id') id: string): Promise<ServiceResult<Message>> {
+    //    if (String(id).trim().length === 0) {
+    //        throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    //    }
+    //    return this.messagesService.findById(id);
+    //}
+    async findById(@Param('id') id: string): Promise<ServiceResult<Message>> {
+        return await this.messagesService.findById(id);
     }
 
     @Post()
