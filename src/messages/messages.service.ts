@@ -88,11 +88,13 @@ export class MessagesService {
         }
         const messageToUpdate = new this.messageModel({ id: '', ...message });
         try {
-            await this.messageModel.findByIdAndUpdate(id, messageToUpdate);
-            this.serviceResult.setAsSuccess([new Message(messageToUpdate)]);
+            const messageUpdated = await this.messageModel.findByIdAndUpdate(id, messageToUpdate);
+            let messageAsParam = messageUpdated.toObject();
+            messageAsParam._id = messageUpdated.toObject()._id.toString();
+            this.serviceResult.setAsSuccess([new Message(messageAsParam)]);
         }
         catch (e) {
-            const errorMessage = new HttpException(`{e}`, HttpStatus.BAD_REQUEST);
+            const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
             this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
         }
         return this.serviceResult;

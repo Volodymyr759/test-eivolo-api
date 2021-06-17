@@ -5,7 +5,7 @@ import { BaseEntity } from '../../infrastructure/base.entity'
 export class Message extends BaseEntity {
     fullName: string;
 
-    @Exclude()
+    //@Exclude()
     company: string;
 
     prefCommunication: PrefferedCommunicationWay;
