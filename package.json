@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Test API for eivolo website",
   "author": "Volodymyr Matsiyevskij",
-  "license": "No license",
+  "license": "MIT",
   "engines": {
     "node": "15.14.0"
   },
@@ -36,7 +36,7 @@
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "cors": "^2.8.5",
-    "mongoose": "~5.10.18",
+    "mongoose": "^5.13.0",
     "mongoose-legacy-pluralize": "^1.0.2",
     "nestjs-typegoose": "^7.1.38",
     "passport": "^0.4.1",
