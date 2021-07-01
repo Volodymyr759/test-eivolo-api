@@ -4,6 +4,9 @@
   "description": "Test API for eivolo website",
   "author": "Volodymyr Matsiyevskij",
   "license": "No license",
+  "engines": {
+    "node": "15.14.0"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
