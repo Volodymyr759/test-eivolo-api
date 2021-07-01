@@ -6,55 +6,62 @@ import {
     Delete,
     Body,
     Param,
-    HttpException,
-    HttpStatus,
+    UsePipes,
+    ValidationPipe,
+    UseGuards,
+    HttpCode,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
 import { MessageModel } from './message.model';
-import { ServiceResult } from '../infrastructure/serviceResult';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { UserEmail } from 'src/decorators/user-email.decorator';
 
 @Controller('messages')
 export class MessagesController {
     constructor(private readonly messagesService: MessagesService) { }
 
     @Get()
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
     @ApiOperation({ summary: 'Get all messages' })
-    findAll(): Promise<ServiceResult<MessageModel>> {
-        return this.messagesService.findAll();
+    async findAll(@UserEmail() email: string): Promise<MessageModel[]> {
+        // console.log('User email: ' + email); // get user by decorator @UserEmail()
+        return await this.messagesService.findAll();
     }
 
     @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
     @ApiOperation({ summary: 'Get message by id' })
-    findById(@Param('id') id: string): Promise<ServiceResult<MessageModel>> {
-        if (String(id).trim().length === 0) {
-            throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-        }
-        return this.messagesService.findById(id);
+    async findById(@Param('id') id: string): Promise<MessageModel> {
+        return await this.messagesService.findById(id);
     }
 
     @Post()
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(201)
+    @UsePipes(new ValidationPipe())
     @ApiOperation({ summary: 'Create message' })
-    create(@Body() createMessageDto: CreateMessageDto): Promise<ServiceResult<MessageModel>> {
-        return this.messagesService.create(createMessageDto);
+    async create(@Body() createMessageDto: CreateMessageDto): Promise<MessageModel> {
+        return await this.messagesService.create(createMessageDto);
     }
 
     @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
     @ApiOperation({ summary: 'Delete message by id' })
-    deleteById(@Param('id') id: string): Promise<ServiceResult<MessageModel>> {
-        if (String(id).trim().length === 0) {
-            throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
-        }
-        return this.messagesService.deleteById(id);
+    async deleteById(@Param('id') id: string): Promise<MessageModel> {
+        return await this.messagesService.deleteById(id);
     }
 
     @Put(':id')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
+    @UsePipes(new ValidationPipe())
     @ApiOperation({ summary: 'Replace old message by new instance, using id' })
-    updateById(@Param('id') id: string, @Body() updateMessageDto: CreateMessageDto): Promise<ServiceResult<MessageModel>> {
-        if (String(id).trim().length === 0) {
-            throw new HttpException(`Bad Request`, HttpStatus.BAD_REQUEST);
-        }
-        return this.messagesService.updateById(id, updateMessageDto);
+    async updateById(@Param('id') id: string, @Body() updateMessageDto: CreateMessageDto): Promise<MessageModel> {
+        return await this.messagesService.updateById(id, updateMessageDto);
     }
 }
