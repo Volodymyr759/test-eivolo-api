@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel } from 'nestjs-typegoose';
 import { Model } from 'mongoose';
 import { AuthDto } from './dto/auth.dto';
 import { UserModel } from './user.model';
@@ -11,7 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectModel('UserModel') private readonly userModel: Model<UserModel>,
+        @InjectModel(UserModel) private readonly userModel: Model<UserModel>,
         private readonly jwtService: JwtService) { }
 
     async create(user: AuthDto) {

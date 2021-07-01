@@ -11,21 +11,22 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
-  imports: [TypegooseModule.forFeature([
-    {
-      typegooseClass: UserModel,
-      schemaOptions: { collection: 'users' },
-    },
-  ]),
-  ConfigModule,
-  JwtModule.registerAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: getJwtConfig,
-  }),
-  PassportModule,
-],
+  imports: [
+    TypegooseModule.forFeature([
+      {
+        typegooseClass: UserModel,
+        schemaOptions: { collection: 'users' },
+      },
+    ]),
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: getJwtConfig,
+    }),
+    PassportModule,
+  ],
   controllers: [AuthController],
   providers: [AuthService, ServiceResult, JwtStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }

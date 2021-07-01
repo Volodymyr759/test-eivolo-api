@@ -1,16 +1,14 @@
-import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from 'nestjs-typegoose';
 import { Model } from 'mongoose';
 import { MessageModel } from './message.model';
-import { ServiceResult } from '../infrastructure/serviceResult';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MESSAGE_NOT_FOUND_ERROR } from './message.constants';
 
 @Injectable()
 export class MessagesService {
     constructor(
-        @InjectModel('MessageModel') private readonly messageModel: Model<MessageModel>,
-        private serviceResult: ServiceResult<MessageModel>) { }
+        @InjectModel(MessageModel) private readonly messageModel: Model<MessageModel> ) { }
 
     async findAll(): Promise<MessageModel[]> {
         return await this.messageModel.find({}).exec();
