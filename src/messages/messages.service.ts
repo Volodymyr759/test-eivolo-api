@@ -1,82 +1,44 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MessageModel } from './message.model';
 import { ServiceResult } from '../infrastructure/serviceResult';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { MESSAGE_NOT_FOUND_ERROR } from './message.constants';
 
 @Injectable()
 export class MessagesService {
     constructor(
         @InjectModel('MessageModel') private readonly messageModel: Model<MessageModel>,
-        private serviceResult: ServiceResult<MessageModel> ) { }
+        private serviceResult: ServiceResult<MessageModel>) { }
 
-    async findAll(): Promise<ServiceResult<MessageModel>> {
-        try {
-            const messagesFromServer = await this.messageModel.find({}).exec();
-            this.serviceResult.setAsSuccess(messagesFromServer);
-        } catch (e) {
-            const errorMessage = new HttpException('No Content', HttpStatus.NO_CONTENT);
-            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
-        }
-        return this.serviceResult;
+    async findAll(): Promise<MessageModel[]> {
+        return await this.messageModel.find({}).exec();
     }
 
-    async findById(id: string): Promise<ServiceResult<MessageModel>> {
-        try {
-            const messageFromServer = await this.messageModel.find({ _id: id }).exec();
-            this.serviceResult.setAsSuccess(messageFromServer);
-        } catch (e) {
-            const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
-        }
-        return this.serviceResult;
+    async findById(id: string): Promise<MessageModel> {
+        return await this.messageModel.findOne({ _id: id }).exec();
     }
 
-    async create(message: CreateMessageDto): Promise<ServiceResult<MessageModel>> {
+    async create(message: CreateMessageDto): Promise<MessageModel> {
         const newMessage = new this.messageModel({ id: '', ...message });
-        try {
-            const messageToBeCreated = await newMessage.save();
-            this.serviceResult.setAsSuccess([messageToBeCreated]);
-        } catch (e) {
-            const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
-            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
-        }
-        return this.serviceResult;
+        return await newMessage.save();
     }
 
-    async deleteById(id: string): Promise<ServiceResult<MessageModel>> {
-        await this.findById(id);
-        if (!this.serviceResult.success) {
-            const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
-            return this.serviceResult;
+    async deleteById(id: string): Promise<MessageModel> {
+        const messageToDelete = await this.findById(id);
+        if (!messageToDelete) {
+            throw new NotFoundException(MESSAGE_NOT_FOUND_ERROR);
         }
-        try {
-            const messageDeleted = await this.messageModel.findByIdAndRemove(id);
-            this.serviceResult.setAsSuccess([messageDeleted]);
-        } catch (e) {
-            const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
-            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
-        }
-        return this.serviceResult;
+        return await this.messageModel.findByIdAndRemove(id);
     }
 
-    async updateById(id: string, message: CreateMessageDto): Promise<ServiceResult<MessageModel>> {
-        await this.findById(id);
-        if (!this.serviceResult.success) {
-            const errorMessage = new HttpException('Not Found', HttpStatus.NOT_FOUND);
-            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
-            return this.serviceResult;
+    async updateById(id: string, message: CreateMessageDto): Promise<MessageModel> {
+        const messageFromDb = await this.findById(id);
+        if (!messageFromDb) {
+            throw new NotFoundException(MESSAGE_NOT_FOUND_ERROR);
         }
         const messageToUpdate = new this.messageModel({ id: '', ...message });
-        try {
-            const messageUpdated = await this.messageModel.findByIdAndUpdate(id, messageToUpdate);
-            this.serviceResult.setAsSuccess([messageUpdated]);
-        } catch (e) {
-            const errorMessage = new HttpException(`${e}`, HttpStatus.BAD_REQUEST);
-            this.serviceResult.setAsFailure(errorMessage.getResponse().toString());
-        }
-        return this.serviceResult;
+        return await this.messageModel.findByIdAndUpdate(id, messageToUpdate);
     }
 }
