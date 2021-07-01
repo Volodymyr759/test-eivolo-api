@@ -25,9 +25,7 @@ async function bootstrap() {
         origin: allowedOrigins,
     };
     app.use(cors(options));
-
     app.setGlobalPrefix('api');
-
-    await app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
+    await app.listen(PORT); // , () => console.log(`Server started on port: ${PORT}`));
 }
 bootstrap();
