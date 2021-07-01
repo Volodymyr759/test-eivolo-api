@@ -29,8 +29,7 @@ export class MessagesController {
     @HttpCode(200)
     @ApiOperation({ summary: 'Get all messages' })
     async findAll(@UserEmail() email: string): Promise<MessageModel[]> {
-        // console.log('User email: ' + email); // get user by decorator @UserEmail()
-        return await this.messagesService.findAll();
+        return await this.messagesService.findAll();// console.log('User email: ' + email); // get user by decorator @UserEmail()
     }
 
     @Get(':id')
