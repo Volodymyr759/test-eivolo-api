@@ -16,8 +16,8 @@ import { ApiOperation } from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
 import { MessageModel } from './message.model';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { UserEmail } from 'src/decorators/user-email.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { UserEmail } from '../decorators/user-email.decorator';
 import { MESSAGE_NOT_FOUND_ERROR } from './message.constants';
 
 @Controller('messages')
