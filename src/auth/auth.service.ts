@@ -1,12 +1,11 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from 'nestjs-typegoose';
 import { Model } from 'mongoose';
+import { genSaltSync, hashSync, compare } from 'bcryptjs';
 import { AuthDto } from './dto/auth.dto';
 import { UserModel } from './user.model';
-import { genSaltSync, hashSync } from 'bcryptjs';
 import { ALREADY_REGISTERED_ERROR, USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from './auth.constants';
-import { compare } from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
