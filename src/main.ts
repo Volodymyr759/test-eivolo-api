@@ -4,7 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cors from 'cors';
 import { ALLOWED_ORIGIN_HOSTS, LOCAL_PORT, SWAGGER_DESCRIPTION, SWAGGER_TAG, SWAGGER_TITLE, SWAGGER_VERSION } from './app/app.constants';
 
-const PORT = process.env.PORT || LOCAL_PORT;
+const PORT = process.env.PORT || 3000; // LOCAL_PORT;
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
