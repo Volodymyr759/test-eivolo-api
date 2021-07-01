@@ -29,4 +29,5 @@ import { getJwtConfig } from '../configs/jwt.config';
   controllers: [AuthController],
   providers: [AuthService, ServiceResult, JwtStrategy],
 })
+
 export class AuthModule { }

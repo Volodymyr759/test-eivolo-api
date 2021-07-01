@@ -4,7 +4,7 @@ import cors from 'cors';
 import { AppModule } from './app/app.module';
 import { ALLOWED_ORIGIN_HOSTS, LOCAL_PORT, SWAGGER_DESCRIPTION, SWAGGER_TAG, SWAGGER_TITLE, SWAGGER_VERSION } from './app/app.constants';
 
-const PORT = process.env.PORT || 3000; // LOCAL_PORT;
+const PORT = process.env.PORT || LOCAL_PORT;
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -17,7 +17,7 @@ async function bootstrap() {
         .addTag(SWAGGER_TAG)
         .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    SwaggerModule.setup('swagger', app, document);
 
     // CORS settings
     const allowedOrigins = ALLOWED_ORIGIN_HOSTS;
@@ -26,6 +26,6 @@ async function bootstrap() {
     };
     app.use(cors(options));
     app.setGlobalPrefix('api');
-    await app.listen(PORT); // , () => console.log(`Server started on port: ${PORT}`));
+    await app.listen(PORT);
 }
 bootstrap();
