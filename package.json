@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Test API for eivolo website",
   "author": "Volodymyr Matsiyevskij",
-  "license": "No license",
+  "license": "MIT",
   "engines": {
     "node": "15.14.0"
   },
