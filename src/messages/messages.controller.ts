@@ -10,6 +10,7 @@ import {
     ValidationPipe,
     UseGuards,
     HttpCode,
+    NotFoundException,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -17,6 +18,7 @@ import { MessagesService } from './messages.service';
 import { MessageModel } from './message.model';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { UserEmail } from 'src/decorators/user-email.decorator';
+import { MESSAGE_NOT_FOUND_ERROR } from './message.constants';
 
 @Controller('messages')
 export class MessagesController {
@@ -36,7 +38,11 @@ export class MessagesController {
     @HttpCode(200)
     @ApiOperation({ summary: 'Get message by id' })
     async findById(@Param('id') id: string): Promise<MessageModel> {
-        return await this.messagesService.findById(id);
+        const message = await this.messagesService.findById(id);
+        if (!message) {
+            throw new NotFoundException(MESSAGE_NOT_FOUND_ERROR);
+        }
+        return message;
     }
 
     @Post()
