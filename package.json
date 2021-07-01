@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Test API for eivolo website",
   "author": "Volodymyr Matsiyevskij",
-  "license": "MIT",
+  "license": "No license",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
