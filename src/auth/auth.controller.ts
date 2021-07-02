@@ -1,6 +1,8 @@
-import { Body, Controller, HttpCode, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
+import { UserModel } from './user.model';
 
 @Controller('auth')
 export class AuthController {
@@ -19,5 +21,12 @@ export class AuthController {
     async login(@Body() dto: AuthDto) {
         const user = await this.authService.validateUser(dto.login, dto.password);
         return this.authService.login(user.email);
+    }
+
+    @Delete(':email')
+    @HttpCode(200)
+    @ApiOperation({ summary: 'Delete user by email' })
+    async deleteByEmail(@Param('email') email: string): Promise<UserModel> {
+        return await this.authService.deleteByEmail(email);
     }
 }

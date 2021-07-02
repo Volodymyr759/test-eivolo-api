@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from 'nestjs-typegoose';
 import { Model } from 'mongoose';
@@ -23,6 +23,14 @@ export class AuthService {
             passwordHash: hashSync(user.password, genSaltSync()),
         });
         return await newUser.save();
+    }
+
+    async deleteByEmail(email: string): Promise<UserModel> {
+        const userToDelete = await this.find(email);
+        if (!userToDelete) {
+            throw new NotFoundException(USER_NOT_FOUND_ERROR);
+        }
+        return await this.userModel.findByIdAndRemove(userToDelete._id);
     }
 
     async find(email: string): Promise<UserModel> {
