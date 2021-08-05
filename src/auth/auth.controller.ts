@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, HttpCode, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpException, HttpStatus, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto/auth.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserModel } from './user.model';
 
 @Controller('auth')
@@ -11,16 +11,15 @@ export class AuthController {
     @Post('register')
     @HttpCode(201)
     @UsePipes(new ValidationPipe())
-    async register(@Body() user: AuthDto) {
-        return await this.authService.create(user);
+    async register(@Body() userDto: CreateUserDto) {
+        return await this.authService.create(userDto);
     }
 
     @Post('login')
-    @UsePipes(new ValidationPipe())
     @HttpCode(200)
-    async login(@Body() dto: AuthDto) {
-        const user = await this.authService.validateUser(dto.login, dto.password);
-        return this.authService.login(user.email);
+    @UsePipes(new ValidationPipe())
+    async login(@Body() userDto: CreateUserDto) {
+        return await this.authService.login(userDto);
     }
 
     @Delete(':email')

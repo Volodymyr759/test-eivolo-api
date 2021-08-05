@@ -1,24 +1,16 @@
 import {
-    Controller,
-    Get,
-    Post,
-    Put,
-    Delete,
-    Body,
-    Param,
-    UsePipes,
-    ValidationPipe,
-    UseGuards,
-    HttpCode,
-    NotFoundException,
+    Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus,
+    Param, Post, Put,
+    UseGuards, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { MessagesService } from './messages.service';
 import { MessageModel } from './message.model';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { UserEmail } from '../decorators/user-email.decorator';
+import { UserData } from '../decorators/user-data.decorator';
 import { MESSAGE_NOT_FOUND_ERROR } from './message.constants';
+import { Role, UserModel } from '../auth/user.model';
 
 @Controller('messages')
 export class MessagesController {
@@ -28,8 +20,11 @@ export class MessagesController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'Get all messages' })
-    async findAll(@UserEmail() email: string): Promise<MessageModel[]> {
-        return await this.messagesService.findAll(); // console.log('User email: ' + email); // get user by decorator @UserEmail()
+    async findAll(@UserData() userFromRequest: { user: UserModel }): Promise<MessageModel[]> {
+        if (!userFromRequest.user.roles.includes(Role.Admin)) {
+            throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
+        }
+        return await this.messagesService.findAll();
     }
 
     @Get(':id')
@@ -39,7 +34,7 @@ export class MessagesController {
     async findById(@Param('id') id: string): Promise<MessageModel> {
         const message = await this.messagesService.findById(id);
         if (!message) {
-            throw new NotFoundException(MESSAGE_NOT_FOUND_ERROR);
+            throw new HttpException(MESSAGE_NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
         }
         return message;
     }

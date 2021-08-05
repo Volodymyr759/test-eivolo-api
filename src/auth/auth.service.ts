@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpCode, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from 'nestjs-typegoose';
 import { Model } from 'mongoose';
-import { genSaltSync, hashSync, compare } from 'bcryptjs';
-import { AuthDto } from './dto/auth.dto';
-import { UserModel } from './user.model';
+import { genSalt, hash, compare } from 'bcryptjs';
+import { CreateUserDto } from './dto/create-user.dto';
+import { Role, UserModel } from './user.model';
 import { ALREADY_REGISTERED_ERROR, USER_NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from './auth.constants';
 
 @Injectable()
@@ -13,14 +13,15 @@ export class AuthService {
         @InjectModel(UserModel) private readonly userModel: Model<UserModel>,
         private readonly jwtService: JwtService) { }
 
-    async create(user: AuthDto) {
-        const userFromDb = await this.find(user.login);
+    async create(userDto: CreateUserDto) {
+        const userFromDb = await this.find(userDto.login);
         if (userFromDb) {
             throw new BadRequestException(ALREADY_REGISTERED_ERROR);
         }
         const newUser = new this.userModel({
-            email: user.login,
-            passwordHash: hashSync(user.password, genSaltSync()),
+            email: userDto.login,
+            passwordHash: await hash(userDto.password, await genSalt()),
+            roles: [Role.User],
         });
         return await newUser.save();
     }
@@ -37,22 +38,20 @@ export class AuthService {
         return await this.userModel.findOne({ email }).exec();
     }
 
-    async login(email: string) {
-        const payload = { email };
+    async login(userDto: CreateUserDto) {
+        const userFromDb = await this.find(userDto.login);
+        if (!userFromDb) {
+            throw new HttpException(USER_NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
+        }
+
+        const isPasswordCorrect = await compare(userDto.password, userFromDb.passwordHash);
+        if (!isPasswordCorrect) {
+            throw new HttpException(WRONG_PASSWORD_ERROR, HttpStatus.BAD_REQUEST);
+        }
+
+        const payload = { user: userFromDb };
         return {
             access_token: await this.jwtService.signAsync(payload, { expiresIn: 1800 }), // expires time - in seconds
         };
-    }
-
-    async validateUser(email: string, password: string): Promise<Pick<UserModel, 'email'>> {
-        const user = await this.userModel.findOne({ email }).exec();
-        if (!user) {
-            throw new UnauthorizedException(USER_NOT_FOUND_ERROR);
-        }
-        const isPasswordCorrect = await compare(password, user.passwordHash);
-        if (!isPasswordCorrect) {
-            throw new UnauthorizedException(WRONG_PASSWORD_ERROR);
-        }
-        return { email: user.email };
     }
 }
