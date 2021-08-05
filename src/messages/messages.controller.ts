@@ -9,7 +9,7 @@ import { MessagesService } from './messages.service';
 import { MessageModel } from './message.model';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { UserData } from '../decorators/user-data.decorator';
-import { MESSAGE_NOT_FOUND_ERROR } from './message.constants';
+import { ACCESS_DENIED, MESSAGE_NOT_FOUND_ERROR } from './message.constants';
 import { Role, UserModel } from '../auth/user.model';
 
 @Controller('messages')
@@ -22,7 +22,7 @@ export class MessagesController {
     @ApiOperation({ summary: 'Get all messages' })
     async findAll(@UserData() userFromRequest: { user: UserModel }): Promise<MessageModel[]> {
         if (!userFromRequest.user.roles.includes(Role.Admin)) {
-            throw new HttpException('Access denied', HttpStatus.FORBIDDEN);
+            throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
         }
         return await this.messagesService.findAll();
     }
