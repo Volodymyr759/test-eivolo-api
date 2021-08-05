@@ -5,7 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from '../auth/auth.module';
 import { MessagesModule } from '../messages/messages.module';
-import { getMongoConfig } from '../configs/mongo.config';
+import { getMongoConfig } from '../infrastructure/configs/mongo.config';
 
 @Module({
     imports: [

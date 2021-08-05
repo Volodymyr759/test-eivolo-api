@@ -8,7 +8,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserModel } from './user.model';
 import { AuthService } from './auth.service';
 import { ServiceResult } from '../infrastructure/serviceResult';
-import { getJwtConfig } from '../configs/jwt.config';
+import { getJwtConfig } from '../infrastructure/configs/jwt.config';
 
 @Module({
   imports: [
