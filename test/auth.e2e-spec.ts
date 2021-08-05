@@ -3,12 +3,12 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app/app.module';
 import { disconnect } from 'mongoose';
-import { AuthDto } from 'src/auth/dto/auth.dto';
+import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 
 const today = new Date();
 const milliseconds = today.getMilliseconds();
 
-const testUser: AuthDto = {
+const testUser: CreateUserDto = {
   login: 'userfortesting' + milliseconds + '@site.com',
   password: 'test123456',
 };

@@ -5,9 +5,9 @@ import { AppModule } from '../src/app/app.module';
 import { disconnect } from 'mongoose';
 import { CreateMessageDto } from 'src/messages/dto/create-message.dto';
 import { PrefferedCommunicationWay } from '../src/messages/prefCommunicationWayEnum';
-import { AuthDto } from 'src/auth/dto/auth.dto';
+import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 
-const loginDto: AuthDto = {
+const loginDto: CreateUserDto = {
   login: 'waddia2@gmail.com',
   password: 'waddia',
 };

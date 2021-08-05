@@ -15,7 +15,7 @@ import { getJwtConfig } from '../configs/jwt.config';
     TypegooseModule.forFeature([
       {
         typegooseClass: UserModel,
-        schemaOptions: { collection: 'users' },
+        schemaOptions: { collection: 'User' },
       },
     ]),
     ConfigModule,
