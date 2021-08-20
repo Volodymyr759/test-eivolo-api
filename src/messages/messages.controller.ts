@@ -42,14 +42,14 @@ export class MessagesController {
     @HttpCode(201)
     @UsePipes(new ValidationPipe())
     @ApiOperation({ summary: 'Create message' })
-    async create(@Body() createMessageDto: CreateMessageDto): Promise<MessageModel> {
+    async create(@Body() createMessageDto: CreateMessageDto) {
         return await this.messagesService.create(createMessageDto);
     }
 
     @Delete(':id')
     @HttpCode(200)
     @ApiOperation({ summary: 'Delete message by id' })
-    async deleteById(@Param('id') id: string): Promise<MessageModel> {
+    async deleteById(@Param('id') id: string) {
         return await this.messagesService.deleteById(id);
     }
 
@@ -57,7 +57,7 @@ export class MessagesController {
     @HttpCode(200)
     @UsePipes(new ValidationPipe())
     @ApiOperation({ summary: 'Replace old message by new instance, using id' })
-    async updateById(@Param('id') id: string, @Body() updateMessageDto: CreateMessageDto): Promise<MessageModel> {
+    async updateById(@Param('id') id: string, @Body() updateMessageDto: CreateMessageDto) {
         return await this.messagesService.updateById(id, updateMessageDto);
     }
 }

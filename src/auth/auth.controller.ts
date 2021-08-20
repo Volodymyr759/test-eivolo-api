@@ -43,7 +43,7 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'Delete user by email' })
-    async deleteByEmail(@Param('email') email: string, @UserData() userFromRequest: { user: UserModel }): Promise<UserModel> {
+    async deleteByEmail(@Param('email') email: string, @UserData() userFromRequest: { user: UserModel }) {
         if (!userFromRequest.user.roles.includes(Role.Admin)) {
             throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
         }

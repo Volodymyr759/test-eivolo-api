@@ -6,11 +6,12 @@ import { genSalt, hash, compare } from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Role, UserModel } from './user.model';
 import { ALREADY_REGISTERED_ERROR, NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from '../infrastructure/constants';
+import { ModelType } from '@typegoose/typegoose/lib/types';
 
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectModel(UserModel) private readonly userModel: Model<UserModel>,
+        @InjectModel(UserModel) private readonly userModel: ModelType<UserModel>,
         private readonly jwtService: JwtService) { }
 
     async create(userDto: CreateUserDto) {
@@ -26,7 +27,7 @@ export class AuthService {
         return await newUser.save();
     }
 
-    async deleteByEmail(email: string): Promise<UserModel> {
+    async deleteByEmail(email: string) {
         const userToDelete = await this.find(email);
         if (!userToDelete) {
             throw new NotFoundException(NOT_FOUND_ERROR);
@@ -38,7 +39,7 @@ export class AuthService {
         return await this.userModel.find({}).exec();
     }
 
-    async find(email: string): Promise<UserModel> {
+    async find(email: string) {
         return await this.userModel.findOne({ email }).exec();
     }
 
