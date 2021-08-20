@@ -13,11 +13,11 @@ import { ACCESS_DENIED, NOT_FOUND_ERROR } from '../infrastructure/constants';
 import { Role, UserModel } from '../auth/user.model';
 
 @Controller('messages')
+// @UseGuards(JwtAuthGuard)
 export class MessagesController {
     constructor(private readonly messagesService: MessagesService) { }
 
     @Get()
-    @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'Get all messages' })
     async findAll(@UserData() userFromRequest: { user: UserModel }): Promise<MessageModel[]> {
@@ -28,7 +28,6 @@ export class MessagesController {
     }
 
     @Get(':id')
-    @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'Get message by id' })
     async findById(@Param('id') id: string): Promise<MessageModel> {
@@ -40,7 +39,6 @@ export class MessagesController {
     }
 
     @Post()
-    @UseGuards(JwtAuthGuard)
     @HttpCode(201)
     @UsePipes(new ValidationPipe())
     @ApiOperation({ summary: 'Create message' })
@@ -49,7 +47,6 @@ export class MessagesController {
     }
 
     @Delete(':id')
-    @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'Delete message by id' })
     async deleteById(@Param('id') id: string): Promise<MessageModel> {
@@ -57,7 +54,6 @@ export class MessagesController {
     }
 
     @Put(':id')
-    @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @UsePipes(new ValidationPipe())
     @ApiOperation({ summary: 'Replace old message by new instance, using id' })
