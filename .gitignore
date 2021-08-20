@@ -1,4 +1,8 @@
 .vs/
 dist/
 node_modules/
+<<<<<<< HEAD
+=======
+uploads/
+>>>>>>> c37648c52bc8271640c73c7b0045a87f05803f5c
 
