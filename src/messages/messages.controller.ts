@@ -13,7 +13,7 @@ import { ACCESS_DENIED, NOT_FOUND_ERROR } from '../infrastructure/constants';
 import { Role, UserModel } from '../auth/user.model';
 
 @Controller('messages')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class MessagesController {
     constructor(private readonly messagesService: MessagesService) { }
 
