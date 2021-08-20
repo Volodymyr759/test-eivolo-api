@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class ServiceResult<T> {
     message: string = '';
     success: boolean = false;
-    data?: T[] = null;
+    data?: T[] = [];
 
     setAsSuccess(data: T[]) {
         this.data = data;
@@ -13,7 +13,7 @@ export class ServiceResult<T> {
     }
 
     setAsFailure(message: string) {
-        this.data = null;
+        this.data = [];
         this.message = message;
         this.success = false;
     }
