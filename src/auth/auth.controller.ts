@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import { UserData } from 'src/infrastructure/decorators/user-data.decorator';
+import { UserData } from '../infrastructure/decorators/user-data.decorator';
 import { ACCESS_DENIED } from '../infrastructure/constants';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
