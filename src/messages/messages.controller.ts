@@ -12,18 +12,24 @@ import { UserData } from '../infrastructure/decorators/user-data.decorator';
 import { ACCESS_DENIED, NOT_FOUND_ERROR } from '../infrastructure/constants';
 import { Role, UserModel } from '../auth/user.model';
 
-@Controller('messages')
-@UseGuards(JwtAuthGuard)
+@Controller('messages') //@UseGuards(JwtAuthGuard)
 export class MessagesController {
     constructor(private readonly messagesService: MessagesService) { }
+
+    // @Get()
+    // @HttpCode(200)
+    // @ApiOperation({ summary: 'Get all messages' })
+    // async findAll(@UserData() userFromRequest: { user: UserModel }): Promise<MessageModel[]> {
+    //     if (!userFromRequest.user.roles.includes(Role.Admin)) {
+    //         throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
+    //     }
+    //     return await this.messagesService.findAll();
+    // }
 
     @Get()
     @HttpCode(200)
     @ApiOperation({ summary: 'Get all messages' })
-    async findAll(@UserData() userFromRequest: { user: UserModel }): Promise<MessageModel[]> {
-        if (!userFromRequest.user.roles.includes(Role.Admin)) {
-            throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
-        }
+    async findAll(): Promise<MessageModel[]> {
         return await this.messagesService.findAll();
     }
 
