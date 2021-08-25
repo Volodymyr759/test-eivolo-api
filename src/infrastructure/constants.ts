@@ -1,6 +1,6 @@
 // Global constants
 export const LOCAL_PORT = 3001;
-export const ALLOWED_ORIGIN_HOSTS = ['http://localhost:3001', 'https://blooming-taiga-34018.herokuapp.com'];
+export const ALLOWED_ORIGIN_HOSTS = ['http://localhost:3000', 'http://localhost:3001', 'https://blooming-taiga-34018.herokuapp.com'];
 export const NOT_FOUND_ERROR = 'Entity not found';
 export const ACCESS_DENIED = 'Access denied';
 
