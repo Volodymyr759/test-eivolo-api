@@ -62,6 +62,7 @@ export class AuthService {
             expires_in: 3600,
             token_type: 'bearer',
             refresh_token: userFromDb.refreshToken,
+            email: userFromDb.email,
         };
     }
 
