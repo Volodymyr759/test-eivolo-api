@@ -54,9 +54,13 @@ export class AuthService {
             throw new HttpException(WRONG_PASSWORD_ERROR, HttpStatus.BAD_REQUEST);
         }
 
-        const payload = { user: userFromDb };
+        const token = await this.jwtService.signAsync({ user: userFromDb }, { expiresIn: 1800 });
+
         return {
-            access_token: await this.jwtService.signAsync(payload, { expiresIn: 1800 }), // expires time - in seconds
+            access_token: token,
+            expires_in: 3600,
+            token_type: 'bearer',
+            refresh_token: token.substring(0, 30),
         };
     }
 }

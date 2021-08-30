@@ -11,12 +11,12 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     // Swagger setup
-    // const config = new DocumentBuilder()
-    //     .setTitle(SWAGGER_TITLE)
-    //     .setDescription(SWAGGER_DESCRIPTION)
-    //     .setVersion(SWAGGER_VERSION)
-    //     .addTag(SWAGGER_TAG)
-    //     .build();
+    const config = new DocumentBuilder()
+        .setTitle(SWAGGER_TITLE)
+        .setDescription(SWAGGER_DESCRIPTION)
+        .setVersion(SWAGGER_VERSION)
+        .addTag(SWAGGER_TAG)
+        .build();
     const swaggerConfig = getSwaggerConfig();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup('swagger', app, document);
