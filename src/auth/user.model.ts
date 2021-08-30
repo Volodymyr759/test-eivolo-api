@@ -17,4 +17,7 @@ export class UserModel extends TimeStamps {
 
     @prop({ type: () => [Number] })
     roles: Role[];
+
+    @prop()
+    refreshToken: string;
 }

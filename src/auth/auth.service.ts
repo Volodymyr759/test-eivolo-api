@@ -23,6 +23,7 @@ export class AuthService {
             email: userDto.login,
             passwordHash: await hash(userDto.password, await genSalt()),
             roles: [Role.User],
+            refreshToken: this.makeRefreshToken(30),
         });
         return await newUser.save();
     }
@@ -60,7 +61,18 @@ export class AuthService {
             access_token: token,
             expires_in: 3600,
             token_type: 'bearer',
-            refresh_token: token.substring(0, 30),
+            refresh_token: userFromDb.refreshToken,
+            email: userFromDb.email,
         };
+    }
+
+    makeRefreshToken(length: number) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
 }

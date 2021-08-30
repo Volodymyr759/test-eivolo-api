@@ -12,7 +12,8 @@ import { UserData } from '../infrastructure/decorators/user-data.decorator';
 import { ACCESS_DENIED, NOT_FOUND_ERROR } from '../infrastructure/constants';
 import { Role, UserModel } from '../auth/user.model';
 
-@Controller('messages') //@UseGuards(JwtAuthGuard)
+@Controller('messages')
+@UseGuards(JwtAuthGuard)
 export class MessagesController {
     constructor(private readonly messagesService: MessagesService) { }
 
