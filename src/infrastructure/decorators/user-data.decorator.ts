@@ -1,8 +1,16 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, Options } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { JWT_SECRET } from '../constants';
 
 export const UserData = createParamDecorator(
     (data: unknown, context: ExecutionContext) => {
         const request = context.switchToHttp().getRequest();
-        return request.user;
+        const jwtService = new JwtService({ secret: JWT_SECRET });
+        // if (request.method === 'OPTIONS') {
+        //     console.log('method OPTIONS was called');
+        // }
+        const token = request.headers.authorization.split(' ')[1];
+        const decodedUser = jwtService.verify(token, { secret: JWT_SECRET });
+        return decodedUser;
     },
 );

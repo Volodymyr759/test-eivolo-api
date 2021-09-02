@@ -1,10 +1,6 @@
 import { prop } from '@typegoose/typegoose';
 import { Base, TimeStamps } from '@typegoose/typegoose/lib/defaultClasses';
-
-export enum Role {
-    User,
-    Admin,
-}
+import { Role } from '../infrastructure/enums/roles.enum';
 
 // tslint:disable-next-line: no-empty-interface
 export interface UserModel extends Base { }

@@ -2,10 +2,11 @@ import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Par
 import { ApiOperation } from '@nestjs/swagger';
 import { UserData } from '../infrastructure/decorators/user-data.decorator';
 import { ACCESS_DENIED } from '../infrastructure/constants';
+import { Role } from '../infrastructure/enums/roles.enum';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt.guard';
-import { Role, UserModel } from './user.model';
+import { UserModel } from './user.model';
 
 @Controller('auth')
 export class AuthController {

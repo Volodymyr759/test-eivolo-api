@@ -37,8 +37,6 @@ export class MessagesService {
         if (!messageFromDb) {
             throw new NotFoundException(NOT_FOUND_ERROR);
         }
-        const messageToUpdate = new this.messageModel({ id: '', ...message });
-        await this.messageModel.findByIdAndUpdate(id, messageToUpdate);
-        return await this.findById(id);
+        return await this.messageModel.findByIdAndUpdate(id, message, { new: true }).exec();
     }
 }
