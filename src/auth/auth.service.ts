@@ -1,13 +1,17 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from 'nestjs-typegoose';
-import { Model } from 'mongoose';
 import { genSalt, hash, compare } from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserModel } from './user.model';
-import { ALREADY_REGISTERED_ERROR, JWT_EXPIRATION_TIME, NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from '../infrastructure/constants';
+import {
+    ALREADY_REGISTERED_ERROR,
+    JWT_EXPIRATION_TIME, JWT_EXPIRATION_TIME_FOR_REFRESH,
+    NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR,
+} from '../infrastructure/constants';
 import { Role } from '../infrastructure/enums/roles.enum';
 import { ModelType } from '@typegoose/typegoose/lib/types';
+import { DecodedUser } from 'src/infrastructure/interfaces/decoded-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -20,11 +24,12 @@ export class AuthService {
         if (userFromDb) {
             throw new BadRequestException(ALREADY_REGISTERED_ERROR);
         }
+        const refreshToken = await this.jwtService.signAsync({ user: userFromDb }, { expiresIn: JWT_EXPIRATION_TIME_FOR_REFRESH });
         const newUser = new this.userModel({
             email: userDto.login,
             passwordHash: await hash(userDto.password, await genSalt()),
             roles: [Role.User],
-            refreshToken: this.makeRefreshToken(30),
+            refreshToken,
         });
         return await newUser.save();
     }
@@ -67,13 +72,27 @@ export class AuthService {
         };
     }
 
-    makeRefreshToken(length: number) {
-        let result = '';
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const charactersLength = characters.length;
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    async refresh(decodedUser: DecodedUser) {
+        try {
+            const userFromDb = await this.find(decodedUser.user.email);
+            if (!userFromDb) {
+                throw new HttpException(NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
+            }
+
+            // Replace old refresh_token
+            userFromDb.refreshToken = await this.jwtService.signAsync({ user: userFromDb }, { expiresIn: JWT_EXPIRATION_TIME_FOR_REFRESH });
+            await this.userModel.findByIdAndUpdate(userFromDb.id, userFromDb, { new: true }).exec();
+
+            const token = await this.jwtService.signAsync({ user: userFromDb }, { expiresIn: JWT_EXPIRATION_TIME });
+            return {
+                access_token: token,
+                expires_in: JWT_EXPIRATION_TIME,
+                token_type: 'bearer',
+                refresh_token: userFromDb.refreshToken,
+                email: userFromDb.email,
+            };
+        } catch (e) {
+            throw new Error('Something went wrong');
         }
-        return result;
     }
 }

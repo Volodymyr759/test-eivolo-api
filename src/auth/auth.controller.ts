@@ -7,12 +7,14 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { UserModel } from './user.model';
+import { DecodedUser } from '../infrastructure/interfaces/decoded-user.interface';
+import { IJwt } from 'src/infrastructure/interfaces/jwt.interface';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
-    @Get() // /api/auth/
+    @Get()
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'Get all users', description: 'Returns users list' })
@@ -20,7 +22,6 @@ export class AuthController {
         if (!userFromRequest.user.roles.includes(Role.Admin)) {
             throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
         }
-
         return await this.authService.findAll();
     }
 
@@ -40,6 +41,13 @@ export class AuthController {
         return await this.authService.login(userDto);
     }
 
+    @Post('refresh')
+    @HttpCode(201)
+    @ApiOperation({ summary: 'Refresh access token', description: 'Generates new jwt-object, using refresh_token from Authorization header' })
+    async refresh(@UserData() decodedUser: DecodedUser): Promise<IJwt> {
+        return await this.authService.refresh(decodedUser);
+    }
+
     @Delete(':email')
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
@@ -48,7 +56,6 @@ export class AuthController {
         if (!userFromRequest.user.roles.includes(Role.Admin)) {
             throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
         }
-
         return await this.authService.deleteByEmail(email);
     }
 }
