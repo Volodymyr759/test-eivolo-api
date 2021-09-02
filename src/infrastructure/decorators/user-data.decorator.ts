@@ -6,9 +6,6 @@ export const UserData = createParamDecorator(
     (data: unknown, context: ExecutionContext) => {
         const request = context.switchToHttp().getRequest();
         const jwtService = new JwtService({ secret: JWT_SECRET });
-        // if (request.method === 'OPTIONS') {
-        //     console.log('method OPTIONS was called');
-        // }
         const token = request.headers.authorization.split(' ')[1];
         const decodedUser = jwtService.verify(token, { secret: JWT_SECRET });
         return decodedUser;

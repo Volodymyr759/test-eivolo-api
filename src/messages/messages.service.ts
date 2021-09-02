@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
-import { Model } from 'mongoose';
 import { MessageModel } from './message.model';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { NOT_FOUND_ERROR } from '../infrastructure/constants';
