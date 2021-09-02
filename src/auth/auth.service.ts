@@ -4,8 +4,9 @@ import { InjectModel } from 'nestjs-typegoose';
 import { Model } from 'mongoose';
 import { genSalt, hash, compare } from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Role, UserModel } from './user.model';
-import { ALREADY_REGISTERED_ERROR, NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from '../infrastructure/constants';
+import { UserModel } from './user.model';
+import { ALREADY_REGISTERED_ERROR, JWT_EXPIRATION_TIME, NOT_FOUND_ERROR, WRONG_PASSWORD_ERROR } from '../infrastructure/constants';
+import { Role } from '../infrastructure/enums/roles.enum';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 
 @Injectable()
@@ -55,11 +56,11 @@ export class AuthService {
             throw new HttpException(WRONG_PASSWORD_ERROR, HttpStatus.BAD_REQUEST);
         }
 
-        const token = await this.jwtService.signAsync({ user: userFromDb }, { expiresIn: 1800 });
+        const token = await this.jwtService.signAsync({ user: userFromDb }, { expiresIn: JWT_EXPIRATION_TIME });
 
         return {
             access_token: token,
-            expires_in: 3600,
+            expires_in: JWT_EXPIRATION_TIME,
             token_type: 'bearer',
             refresh_token: userFromDb.refreshToken,
             email: userFromDb.email,
