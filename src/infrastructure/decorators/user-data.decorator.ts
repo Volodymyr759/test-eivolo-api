@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext, Options } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JWT_SECRET } from '../constants';
 
