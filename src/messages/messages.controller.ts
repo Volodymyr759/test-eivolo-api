@@ -9,7 +9,7 @@ import { MessagesService } from './messages.service';
 import { MessageModel } from './message.model';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { UserData } from '../infrastructure/decorators/user-data.decorator';
-import { ACCESS_DENIED, BAD_REQUEST, NOT_FOUND_ERROR } from '../infrastructure/constants';
+import { ACCESS_DENIED, FORBIDDEN, BAD_REQUEST, NOT_FOUND_ERROR, UNAUTHORIZED } from '../infrastructure/constants';
 import { DecodedUser } from '../infrastructure/interfaces/decoded-user.interface';
 import { Role } from '../infrastructure/enums/roles.enum';
 
@@ -23,10 +23,10 @@ export class MessagesController {
     @ApiOperation({ summary: 'Get all messages, allows access for users with admin role' })
     async findAll(@UserData() decodedUser: DecodedUser): Promise<MessageModel[]> {
         if (!decodedUser) {
-            throw new HttpException(BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            throw new HttpException(UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
         }
         if (!decodedUser.user.roles.includes(Role.Admin)) {
-            throw new HttpException(ACCESS_DENIED, HttpStatus.UNAUTHORIZED);
+            throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
         }
         return await this.messagesService.findAll();
     }

@@ -7,8 +7,8 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { UserModel } from './user.model';
-import { DecodedUser } from '../infrastructure/interfaces/decoded-user.interface';
-import { IJwt } from 'src/infrastructure/interfaces/jwt.interface';
+import { IJwt } from '../infrastructure/interfaces/jwt.interface';
+import { RefreshToken } from '../infrastructure/interfaces/refresh-token.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -42,10 +42,10 @@ export class AuthController {
     }
 
     @Post('refresh')
-    @HttpCode(201)
+    @HttpCode(200)
     @ApiOperation({ summary: 'Refresh access token', description: 'Generates new jwt-object, using refresh_token from Authorization header' })
-    async refresh(@UserData() decodedUser: DecodedUser): Promise<IJwt> {
-        return await this.authService.refresh(decodedUser);
+    async refresh(@Body() refreshToken: RefreshToken): Promise<IJwt> {
+        return await this.authService.refresh(refreshToken.token);
     }
 
     @Delete(':email')

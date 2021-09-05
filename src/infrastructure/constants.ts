@@ -5,7 +5,9 @@ export const ALLOWED_ORIGIN_HOSTS = ['http://localhost:3000', 'http://localhost:
 // Errors
 export const ACCESS_DENIED = 'Access denied';
 export const BAD_REQUEST = 'Bad request';
+export const FORBIDDEN = 'Access forbidden';
 export const NOT_FOUND_ERROR = 'Entity not found';
+export const UNAUTHORIZED = 'Unauthorized';
 
 // Swagger constants
 export const SWAGGER_TITLE = 'Eivolo site API';
