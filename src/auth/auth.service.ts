@@ -51,6 +51,10 @@ export class AuthService {
         return await this.userModel.findOne({ email }).exec();
     }
 
+    async findById(id: string) {
+        return await this.userModel.findOne({ _id: id }).exec();
+    }
+
     async login(userDto: CreateUserDto) {
         const userFromDb = await this.find(userDto.login);
         if (!userFromDb) {
