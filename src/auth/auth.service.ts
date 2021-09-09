@@ -70,6 +70,7 @@ export class AuthService {
             token_type: 'bearer',
             refresh_token: userFromDb.refreshToken,
             email: userFromDb.email,
+            roles: userFromDb.roles,
         };
     }
 
