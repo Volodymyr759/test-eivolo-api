@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { UserData } from '../infrastructure/decorators/user-data.decorator';
-import { ACCESS_DENIED } from '../infrastructure/constants';
+import { ACCESS_DENIED, BAD_REQUEST, NOT_FOUND_ERROR } from '../infrastructure/constants';
 import { Role } from '../infrastructure/enums/roles.enum';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './guards/jwt.guard';
 import { UserModel } from './user.model';
 import { IJwt } from '../infrastructure/interfaces/jwt.interface';
 import { RefreshToken } from '../infrastructure/interfaces/refresh-token.interface';
+import { DecodedUser } from '../infrastructure/interfaces/decoded-user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -23,6 +24,25 @@ export class AuthController {
             throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
         }
         return await this.authService.findAll();
+    }
+
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
+    @ApiOperation({ summary: 'Get user by id', description: 'Returns user' })
+    async getUser(@UserData() decodedUser: DecodedUser, @Param('id') id: string): Promise<UserModel | null> {
+        if (!decodedUser) {
+            throw new HttpException(BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        }
+        if (!decodedUser.user.roles.includes(Role.Admin)) {
+            throw new HttpException(ACCESS_DENIED, HttpStatus.UNAUTHORIZED);
+        }
+
+        const user = await this.authService.findById(id);
+        if (!user) {
+            throw new HttpException(NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
+        }
+        return user;
     }
 
     @Post('register')
