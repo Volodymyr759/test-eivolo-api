@@ -13,6 +13,7 @@ import {
 } from '../infrastructure/constants';
 import { Role } from '../infrastructure/enums/roles.enum';
 import { ModelType } from '@typegoose/typegoose/lib/types';
+import { UpdateUserDto } from './dto/update-user-dto';
 
 @Injectable()
 export class AuthService {
@@ -104,5 +105,18 @@ export class AuthService {
         } catch (e) {
             throw new Error('Something went wrong :' + e.message);
         }
+    }
+
+    async updateById(id: string, user: UpdateUserDto) {
+        const userFromDb = await this.findById(id);
+        if (!userFromDb) {
+            throw new NotFoundException(NOT_FOUND_ERROR);
+        }
+
+        userFromDb.email = user.email;
+        userFromDb.updatedAt = new Date();
+        userFromDb.roles = user.roles;
+
+        return await this.userModel.findByIdAndUpdate(id, userFromDb, { new: true }).exec();
     }
 }

@@ -1,4 +1,8 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+    Body, Controller,
+    Delete, Get,
+    HttpCode, HttpException, HttpStatus, Param, Post, Put, UseGuards, UsePipes, ValidationPipe,
+} from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { UserData } from '../infrastructure/decorators/user-data.decorator';
 import { ACCESS_DENIED, BAD_REQUEST, NOT_FOUND_ERROR } from '../infrastructure/constants';
@@ -10,6 +14,7 @@ import { UserModel } from './user.model';
 import { IJwt } from '../infrastructure/interfaces/jwt.interface';
 import { RefreshToken } from '../infrastructure/interfaces/refresh-token.interface';
 import { DecodedUser } from '../infrastructure/interfaces/decoded-user.interface';
+import { UpdateUserDto } from './dto/update-user-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -43,6 +48,20 @@ export class AuthController {
             throw new HttpException(NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
         }
         return user;
+    }
+
+    @Put(':id')
+    @HttpCode(200)
+    @UsePipes(new ValidationPipe())
+    @ApiOperation({ summary: 'Administrator can update users email and role, using id' })
+    async updateById(@UserData() decodedUser: DecodedUser, @Param('id') id: string, @Body() userDto: UpdateUserDto) {
+        if (!decodedUser) {
+            throw new HttpException(BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        }
+        if (!decodedUser.user.roles.includes(Role.Admin)) {
+            throw new HttpException(ACCESS_DENIED, HttpStatus.UNAUTHORIZED);
+        }
+        return await this.authService.updateById(id, userDto);
     }
 
     @Post('register')
