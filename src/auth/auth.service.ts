@@ -14,6 +14,7 @@ import {
 import { Role } from '../infrastructure/enums/roles.enum';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { UpdateUserDto } from './dto/update-user-dto';
+import { IUserProfile } from 'src/infrastructure/interfaces/decoded-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +54,15 @@ export class AuthService {
     }
 
     async findById(id: string) {
-        return await this.userModel.findOne({ _id: id }).exec();
+        const userFromDb = await this.userModel.findOne({ _id: id }).exec();
+        const userProfile: IUserProfile = {
+            roles: userFromDb!.roles,
+            _id: userFromDb!._id,
+            email: userFromDb!.email,
+            createdAt: userFromDb!.createdAt,
+            updatedAt: userFromDb!.updatedAt,
+        };
+        return userProfile;
     }
 
     async login(userDto: CreateUserDto) {
@@ -66,8 +75,15 @@ export class AuthService {
         if (!isPasswordCorrect) {
             throw new HttpException(WRONG_PASSWORD_ERROR, HttpStatus.BAD_REQUEST);
         }
+        const userProfile: IUserProfile = {
+            roles: userFromDb.roles,
+            _id: userFromDb._id,
+            email: userFromDb.email,
+            createdAt: userFromDb.createdAt,
+            updatedAt: userFromDb.updatedAt,
+        };
 
-        const token = await this.jwtService.signAsync({ user: userFromDb }, { expiresIn: JWT_EXPIRATION_TIME });
+        const token = await this.jwtService.signAsync(userProfile, { expiresIn: JWT_EXPIRATION_TIME });
 
         return {
             access_token: token,
@@ -89,11 +105,17 @@ export class AuthService {
             if (decodedEmail !== userFromDb.email) {
                 throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
             }
-
+            const userProfile: IUserProfile = {
+                roles: userFromDb.roles,
+                _id: userFromDb._id,
+                email: userFromDb.email,
+                createdAt: userFromDb.createdAt,
+                updatedAt: userFromDb.updatedAt,
+            };
             userFromDb.refreshToken = await this.jwtService.signAsync({ email: userFromDb.email }, { expiresIn: JWT_EXPIRATION_TIME_FOR_REFRESH });
             await this.userModel.findByIdAndUpdate(userFromDb.id, userFromDb, { new: true }).exec();
 
-            const token = await this.jwtService.signAsync({ user: userFromDb }, { expiresIn: JWT_EXPIRATION_TIME });
+            const token = await this.jwtService.signAsync(userProfile, { expiresIn: JWT_EXPIRATION_TIME });
             return {
                 access_token: token,
                 expires_in: JWT_EXPIRATION_TIME,
