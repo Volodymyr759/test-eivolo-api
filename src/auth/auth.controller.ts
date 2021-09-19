@@ -1,9 +1,10 @@
 import {
     Body, Controller,
     Delete, Get,
-    HttpCode, HttpException, HttpStatus, Param, Post, Put, UseGuards, UsePipes, ValidationPipe,
+    HttpCode, HttpException, HttpStatus, Param, Post, Put, Res, UseGuards, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
+import { Response } from 'express';
 import { UserData } from '../infrastructure/decorators/user-data.decorator';
 import { ACCESS_DENIED, BAD_REQUEST, NOT_FOUND_ERROR } from '../infrastructure/constants';
 import { Role } from '../infrastructure/enums/roles.enum';
@@ -76,15 +77,19 @@ export class AuthController {
     @HttpCode(200)
     @UsePipes(new ValidationPipe())
     @ApiOperation({ summary: 'Login user', description: 'Returns token with UserData' })
-    async login(@Body() userDto: CreateUserDto) {
-        return await this.authService.login(userDto);
+    async login(@Res({ passthrough: true }) response: Response, @Body() userDto: CreateUserDto) {
+        const jwtObject = await this.authService.login(userDto);
+        response.cookie('auth', JSON.stringify(jwtObject));
+        return jwtObject;
     }
 
     @Post('refresh')
     @HttpCode(200)
     @ApiOperation({ summary: 'Refresh access token', description: 'Generates new jwt-object, using refresh_token from Authorization header' })
-    async refresh(@Body() refreshToken: RefreshToken): Promise<IJwt> {
-        return await this.authService.refresh(refreshToken.token);
+    async refresh(@Res({ passthrough: true }) response: Response, @Body() refreshToken: RefreshToken): Promise<IJwt> {
+        const jwtObject = await this.authService.refresh(refreshToken.token);
+        response.cookie('auth', JSON.stringify(jwtObject));
+        return jwtObject;
     }
 
     @Delete(':email')

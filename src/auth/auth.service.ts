@@ -90,7 +90,6 @@ export class AuthService {
                 throw new HttpException(FORBIDDEN, HttpStatus.FORBIDDEN);
             }
 
-            // Replace old refresh_token
             userFromDb.refreshToken = await this.jwtService.signAsync({ email: userFromDb.email }, { expiresIn: JWT_EXPIRATION_TIME_FOR_REFRESH });
             await this.userModel.findByIdAndUpdate(userFromDb.id, userFromDb, { new: true }).exec();
 
@@ -103,7 +102,7 @@ export class AuthService {
                 email: userFromDb.email,
             };
         } catch (e) {
-            throw new Error('Something went wrong :' + e.message);
+            throw new Error('Something went wrong :' + e);
         }
     }
 

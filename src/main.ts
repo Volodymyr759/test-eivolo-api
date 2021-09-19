@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app/app.module';
 import { getSwaggerConfig } from './infrastructure/configs/swagger.config';
 import { ALLOWED_ORIGIN_HOSTS, LOCAL_PORT, SWAGGER_DESCRIPTION, SWAGGER_TAG, SWAGGER_TITLE, SWAGGER_VERSION } from './infrastructure/constants';
@@ -27,8 +28,8 @@ async function bootstrap() {
         origin: allowedOrigins,
     };
     app.use(cors(options));
-
     app.setGlobalPrefix('api');
+    app.use(cookieParser());
 
     await app.listen(PORT);
 }
