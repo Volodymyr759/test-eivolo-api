@@ -4,6 +4,7 @@ import { Role } from '../infrastructure/enums/roles.enum';
 
 // tslint:disable-next-line: no-empty-interface
 export interface UserModel extends Base { }
+
 export class UserModel extends TimeStamps {
     @prop({ unique: true })
     email: string;

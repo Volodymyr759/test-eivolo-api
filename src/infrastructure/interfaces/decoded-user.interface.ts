@@ -1,16 +1,10 @@
+import { Types } from 'mongoose';
 import { Role } from '../enums/roles.enum';
 
-export interface DecodedUser {
-	user: {
-		roles: Role[];
-		_id: string;
-		email: string;
-		passwordHash: string;
-		createdAt: Date;
-		updatedAt: Date;
-		__v: number;
-		refreshToken: string;
-	};
-	iat: number;
-	exp: number;
+export interface IUserProfile {
+	roles: Role[];
+	_id: Types.ObjectId;
+	email: string;
+	createdAt?: Date;
+	updatedAt?: Date;
 }

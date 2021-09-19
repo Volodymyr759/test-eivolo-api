@@ -6,7 +6,7 @@ import {
 import { ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
 import { UserData } from '../infrastructure/decorators/user-data.decorator';
-import { ACCESS_DENIED, BAD_REQUEST, NOT_FOUND_ERROR } from '../infrastructure/constants';
+import { ACCESS_DENIED, BAD_REQUEST, NOT_FOUND_ERROR, UNAUTHORIZED } from '../infrastructure/constants';
 import { Role } from '../infrastructure/enums/roles.enum';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,7 +14,7 @@ import { JwtAuthGuard } from './guards/jwt.guard';
 import { UserModel } from './user.model';
 import { IJwt } from '../infrastructure/interfaces/jwt.interface';
 import { RefreshToken } from '../infrastructure/interfaces/refresh-token.interface';
-import { DecodedUser } from '../infrastructure/interfaces/decoded-user.interface';
+import { IUserProfile } from '../infrastructure/interfaces/decoded-user.interface';
 import { UpdateUserDto } from './dto/update-user-dto';
 
 @Controller('auth')
@@ -25,8 +25,11 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'Get all users', description: 'Returns users list' })
-    async getAllUsers(@UserData() userFromRequest: { user: UserModel }): Promise<UserModel[]> {
-        if (!userFromRequest.user.roles.includes(Role.Admin)) {
+    async getAllUsers(@UserData() decodedUser: IUserProfile): Promise<UserModel[]> {
+        if (!decodedUser) {
+            throw new HttpException(UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+        }
+        if (!decodedUser.roles.includes(Role.Admin)) {
             throw new HttpException(ACCESS_DENIED, HttpStatus.FORBIDDEN);
         }
         return await this.authService.findAll();
@@ -36,14 +39,10 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(200)
     @ApiOperation({ summary: 'Get user by id', description: 'Returns user' })
-    async getUser(@UserData() decodedUser: DecodedUser, @Param('id') id: string): Promise<UserModel | null> {
+    async getUser(@UserData() decodedUser: IUserProfile, @Param('id') id: string): Promise<IUserProfile | null> {
         if (!decodedUser) {
             throw new HttpException(BAD_REQUEST, HttpStatus.BAD_REQUEST);
         }
-        if (!decodedUser.user.roles.includes(Role.Admin)) {
-            throw new HttpException(ACCESS_DENIED, HttpStatus.UNAUTHORIZED);
-        }
-
         const user = await this.authService.findById(id);
         if (!user) {
             throw new HttpException(NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
@@ -55,11 +54,11 @@ export class AuthController {
     @HttpCode(200)
     @UsePipes(new ValidationPipe())
     @ApiOperation({ summary: 'Administrator can update users email and role, using id' })
-    async updateById(@UserData() decodedUser: DecodedUser, @Param('id') id: string, @Body() userDto: UpdateUserDto) {
+    async updateById(@UserData() decodedUser: IUserProfile, @Param('id') id: string, @Body() userDto: UpdateUserDto) {
         if (!decodedUser) {
             throw new HttpException(BAD_REQUEST, HttpStatus.BAD_REQUEST);
         }
-        if (!decodedUser.user.roles.includes(Role.Admin)) {
+        if (!decodedUser.roles.includes(Role.Admin)) {
             throw new HttpException(ACCESS_DENIED, HttpStatus.UNAUTHORIZED);
         }
         return await this.authService.updateById(id, userDto);
