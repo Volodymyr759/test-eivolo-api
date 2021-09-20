@@ -92,6 +92,7 @@ export class AuthService {
             refresh_token: userFromDb.refreshToken,
             email: userFromDb.email,
             roles: userFromDb.roles,
+            userId: userFromDb._id,
         };
     }
 
@@ -122,6 +123,8 @@ export class AuthService {
                 token_type: 'bearer',
                 refresh_token: userFromDb.refreshToken,
                 email: userFromDb.email,
+                roles: userFromDb.roles,
+                userId: userFromDb._id,
             };
         } catch (e) {
             throw new Error('Something went wrong :' + e);
