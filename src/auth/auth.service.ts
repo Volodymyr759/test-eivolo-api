@@ -15,6 +15,7 @@ import { Role } from '../infrastructure/enums/roles.enum';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { IUserProfile } from 'src/infrastructure/interfaces/decoded-user.interface';
+import { ChangeEmailDto } from './dto/change-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -63,6 +64,21 @@ export class AuthService {
             updatedAt: userFromDb!.updatedAt,
         };
         return userProfile;
+    }
+
+    async changeEmail(changedEmail: ChangeEmailDto) {
+        const userFromDb = await this.find(changedEmail.oldEmail);
+        if (!userFromDb) {
+            throw new HttpException(NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
+        }
+
+        const isPasswordCorrect = await compare(changedEmail.password, userFromDb.passwordHash);
+        if (!isPasswordCorrect) {
+            throw new HttpException(WRONG_PASSWORD_ERROR, HttpStatus.BAD_REQUEST);
+        }
+        userFromDb.email = changedEmail.newEmail;
+        await this.userModel.findByIdAndUpdate(userFromDb.id, userFromDb, { new: true }).exec();
+        return userFromDb.email;
     }
 
     async login(userDto: CreateUserDto) {
