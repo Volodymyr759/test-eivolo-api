@@ -16,6 +16,7 @@ import { IJwt } from '../infrastructure/interfaces/jwt.interface';
 import { RefreshToken } from '../infrastructure/interfaces/refresh-token.interface';
 import { IUserProfile } from '../infrastructure/interfaces/decoded-user.interface';
 import { UpdateUserDto } from './dto/update-user-dto';
+import { ChangeEmailDto } from './dto/change-email.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -64,12 +65,17 @@ export class AuthController {
         return await this.authService.updateById(id, userDto);
     }
 
-    @Post('register')
-    @HttpCode(201)
+    @Post('change-email')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
     @UsePipes(new ValidationPipe())
-    @ApiOperation({ summary: 'Register user' })
-    async register(@Body() userDto: CreateUserDto) {
-        return await this.authService.create(userDto);
+    @ApiOperation({ summary: 'Change user email', description: 'Returns confirmation of change email' })
+    async changeEmail(@UserData() decodedUser: IUserProfile, @Body() changeEmailDto: ChangeEmailDto) {
+        if (!decodedUser) {
+            throw new HttpException(BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        }
+        const changedEmail = await this.authService.changeEmail(changeEmailDto);
+        return changedEmail;
     }
 
     @Post('login')
@@ -89,6 +95,14 @@ export class AuthController {
         const jwtObject = await this.authService.refresh(refreshToken.token);
         response.cookie('auth', JSON.stringify(jwtObject));
         return jwtObject;
+    }
+
+    @Post('register')
+    @HttpCode(201)
+    @UsePipes(new ValidationPipe())
+    @ApiOperation({ summary: 'Register user' })
+    async register(@Body() userDto: CreateUserDto) {
+        return await this.authService.create(userDto);
     }
 
     @Delete(':email')
