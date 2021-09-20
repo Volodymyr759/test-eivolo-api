@@ -6,13 +6,12 @@ import { FilesService } from './files.service';
 
 @Controller('files')
 export class FilesController {
-	constructor(private readonly filesService: FilesService) { }
+    constructor(private readonly filesService: FilesService) { }
 
-	@Post('upload')
-	@HttpCode(200)
-	//@UseGuards(JwtAuthGuard)
-	@UseInterceptors(FileInterceptor('file'))
-	async uploadFiles(@UploadedFile() file: Express.Multer.File): Promise<FileItemResponse[]> {
-		return this.filesService.saveFiles([file]);
-	}
+    @Post('upload')
+    @HttpCode(200)
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadFiles(@UploadedFile() file: Express.Multer.File): Promise<FileItemResponse[]> {
+        return this.filesService.saveFiles([file]);
+    }
 }

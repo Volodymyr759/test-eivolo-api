@@ -47,7 +47,7 @@ export class AuthController {
         if (!user) {
             throw new HttpException(NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
         }
-        return user;
+        return decodedUser;
     }
 
     @Put(':id')

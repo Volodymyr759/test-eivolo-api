@@ -7,21 +7,21 @@ import { ensureDir, writeFile } from 'fs-extra';
 @Injectable()
 export class FilesService {
 
-	async saveFiles(files: Express.Multer.File[]): Promise<FileItemResponse[]> {
-		const dataFolder = format(new Date(), 'yyyy-MM-dd');
+    async saveFiles(files: Express.Multer.File[]): Promise<FileItemResponse[]> {
+        const dataFolder = format(new Date(), 'yyyy-MM-dd');
 
-		const uploadFolder = `${path}/uploads/${dataFolder}`;
+        const uploadFolder = `${path}/uploads/${dataFolder}`;
 
-		await ensureDir(uploadFolder);
+        await ensureDir(uploadFolder);
 
-		const res: FileItemResponse[] = [];
+        const res: FileItemResponse[] = [];
 
-		for (const file of files) {
-			await writeFile(`${uploadFolder}/${file.originalname}`, file.buffer);
+        for (const file of files) {
+            await writeFile(`${uploadFolder}/${file.originalname}`, file.buffer);
 
-			res.push({ url: `${dataFolder}/${file.originalname}`, name: file.originalname });
-		}
+            res.push({ url: `${dataFolder}/${file.originalname}`, name: file.originalname });
+        }
 
-		return res;
-	}
+        return res;
+    }
 }
