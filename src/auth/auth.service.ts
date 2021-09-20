@@ -16,6 +16,7 @@ import { ModelType } from '@typegoose/typegoose/lib/types';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { IUserProfile } from 'src/infrastructure/interfaces/decoded-user.interface';
 import { ChangeEmailDto } from './dto/change-email.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -79,6 +80,22 @@ export class AuthService {
         userFromDb.email = changedEmail.newEmail;
         await this.userModel.findByIdAndUpdate(userFromDb.id, userFromDb, { new: true }).exec();
         return userFromDb.email;
+    }
+
+    async changePassword(changePasswordDto: ChangePasswordDto) {
+        const userFromDb = await this.find(changePasswordDto.email);
+        if (!userFromDb) {
+            throw new HttpException(NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
+        }
+
+        const isPasswordCorrect = await compare(changePasswordDto.oldPassword, userFromDb.passwordHash);
+        if (!isPasswordCorrect) {
+            throw new HttpException(WRONG_PASSWORD_ERROR, HttpStatus.BAD_REQUEST);
+        }
+        userFromDb.passwordHash = await hash(changePasswordDto.newPassword, await genSalt());
+        await this.userModel.findByIdAndUpdate(userFromDb.id, userFromDb, { new: true }).exec();
+
+        return true;
     }
 
     async login(userDto: CreateUserDto) {

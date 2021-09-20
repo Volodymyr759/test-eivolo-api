@@ -17,6 +17,7 @@ import { RefreshToken } from '../infrastructure/interfaces/refresh-token.interfa
 import { IUserProfile } from '../infrastructure/interfaces/decoded-user.interface';
 import { UpdateUserDto } from './dto/update-user-dto';
 import { ChangeEmailDto } from './dto/change-email.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -76,6 +77,20 @@ export class AuthController {
         }
         const changedEmail = await this.authService.changeEmail(changeEmailDto);
         return changedEmail;
+    }
+
+    @Post('change-password')
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(200)
+    @UsePipes(new ValidationPipe())
+    @ApiOperation({ summary: 'Change user password', description: 'Returns confirmation of change password' })
+    async changePassword(@UserData() decodedUser: IUserProfile, @Body() changePasswordDto: ChangePasswordDto) {
+        if (!decodedUser) {
+            throw new HttpException(BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        }
+        const changedPassword = await this.authService.changePassword(changePasswordDto);
+
+        return changedPassword ? HttpStatus.OK : HttpStatus.EXPECTATION_FAILED;
     }
 
     @Post('login')
