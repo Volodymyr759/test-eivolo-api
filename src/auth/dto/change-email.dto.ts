@@ -17,6 +17,6 @@ export class ChangeEmailDto {
     @ApiProperty({ type: String, required: true, minLength: 6, maxLength: 10 })
     @IsString()
     @MinLength(6, { message: 'Password is too short. Minimal length is 6 characters' })
-    @MaxLength(100, { message: 'Password is too long. Maximal length is 100 characters' })
+    @MaxLength(10, { message: 'Password is too long. Maximal length is 10 characters' })
     password: string;
 }
