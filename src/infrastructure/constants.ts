@@ -18,6 +18,6 @@ export const SWAGGER_TAG = 'messages';
 // Auth Module constants
 export const ALREADY_REGISTERED_ERROR = 'User already exists';
 export const WRONG_PASSWORD_ERROR = 'Wrong password';
-export const JWT_EXPIRATION_TIME = 1800;
+export const JWT_EXPIRATION_TIME = 30;
 export const JWT_EXPIRATION_TIME_FOR_REFRESH = 1209600;
 export const JWT_SECRET = 'Awesdlk12312/*4';

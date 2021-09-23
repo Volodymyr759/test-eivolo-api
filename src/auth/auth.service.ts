@@ -17,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user-dto';
 import { IUserProfile } from 'src/infrastructure/interfaces/decoded-user.interface';
 import { ChangeEmailDto } from './dto/change-email.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -98,6 +99,17 @@ export class AuthService {
         return true;
     }
 
+    async forgotPassword(forgotPassword: ForgotPasswordDto) {
+        const userFromDb = await this.find(forgotPassword.email);
+        if (!userFromDb) {
+            throw new HttpException(NOT_FOUND_ERROR, HttpStatus.NOT_FOUND);
+        }
+        const newPassword = makeRandomString(6);
+        userFromDb.passwordHash = await hash(newPassword, await genSalt());
+        await this.userModel.findByIdAndUpdate(userFromDb.id, userFromDb, { new: true }).exec();
+        return { password: newPassword };
+    }
+
     async login(userDto: CreateUserDto) {
         const userFromDb = await this.find(userDto.login);
         if (!userFromDb) {
@@ -176,4 +188,14 @@ export class AuthService {
 
         return await this.userModel.findByIdAndUpdate(id, userFromDb, { new: true }).exec();
     }
+}
+
+function makeRandomString(length: number) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
 }
