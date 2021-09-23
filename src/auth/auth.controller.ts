@@ -18,6 +18,7 @@ import { IUserProfile } from '../infrastructure/interfaces/decoded-user.interfac
 import { UpdateUserDto } from './dto/update-user-dto';
 import { ChangeEmailDto } from './dto/change-email.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -91,6 +92,15 @@ export class AuthController {
         const changedPassword = await this.authService.changePassword(changePasswordDto);
 
         return changedPassword ? HttpStatus.OK : HttpStatus.EXPECTATION_FAILED;
+    }
+
+    @Post('forgot-password')
+    @UsePipes(new ValidationPipe())
+    @ApiOperation({ summary: 'Create new user password', description: 'Returns new user password' })
+    async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+        const createdPassword = await this.authService.forgotPassword(forgotPasswordDto);
+
+        return createdPassword ? createdPassword : HttpStatus.EXPECTATION_FAILED;
     }
 
     @Post('login')
