@@ -1,22 +1,9 @@
 # NestJS REST API
 
-A CRUD REST API using the NestJS + MongoDB/Mongoose.
+Swagger: https://polar-castle-18354.herokuapp.com/swagger
+API for web-frontend: https://web-client-ts.vercel.app/
+FRONTEND-repository: https://github.com/Volodymyr759/web-client-ts
 
-## Installation
+## Contact
 
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
+Regarding to create backend (framework Nest.js), please use the mail: logisticmaster.2000@gmail.com
