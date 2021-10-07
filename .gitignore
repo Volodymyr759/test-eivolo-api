@@ -1,6 +1,7 @@
 .vs/
 dist/
 node_modules/
+.env
 <<<<<<< HEAD
 =======
 uploads/
