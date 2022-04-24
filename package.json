@@ -5,7 +5,7 @@
   "author": "Volodymyr Matsiyevskij",
   "license": "MIT",
   "engines": {
-    "node": "15.14.0"
+    "node": "12.22.6"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -38,6 +38,7 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "date-fns": "^2.19.0",
+    "express": "^4.17.3",
     "fs-extra": "^9.1.0",
     "mongoose": "^5.10.18",
     "nestjs-typegoose": "^7.1.38",
@@ -46,7 +47,7 @@
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
     "rxjs": "^6.3.3",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
     "@nestjs/testing": "^7.6.17",
